@@ -252,7 +252,7 @@ class GPCCategorySelector
         if(!is_admin())
         {
           $sql.=" JOIN ".USER_CACHE_CATEGORIES_TABLE." pucc
-                  ON (pucc.cat_id = pct.id) AND pucc.user_id='".$user['id']."' ";
+                  ON (pucc.cat_id = pct.id) AND pucc.pwg_user_id='".$user['id']."' ";
         }
         else
         {

@@ -277,7 +277,7 @@
       switch($mode)
       {
         case "replace":
-          $sql="DELETE FROM ".CADDIE_TABLE." WHERE user_id = '".$user['id']."';";
+          $sql="DELETE FROM ".CADDIE_TABLE." WHERE pwg_user_id = '".$user['id']."';";
           pwg_query($sql);
         case "add":
           $sql="INSERT IGNORE INTO ".CADDIE_TABLE."
@@ -445,7 +445,7 @@
         $sql.=" JOIN ".IMAGE_CATEGORY_TABLE." pict
                 ON pict.image_id = pitt.image_id )
                 JOIN ".USER_CACHE_CATEGORIES_TABLE." pucc
-                ON (pucc.cat_id = pict.category_id AND pucc.user_id='".$user['id']."' )";
+                ON (pucc.cat_id = pict.category_id AND pucc.pwg_user_id='".$user['id']."' )";
       }
       else
       {
@@ -526,10 +526,10 @@
                    put.".$conf['user_fields']['email']." AS mail_address
             FROM ".USERS_TABLE." AS put
               JOIN ".USER_INFOS_TABLE." AS puit
-                ON puit.user_id =  put.".$conf['user_fields']['id']."
+                ON puit.pwg_user_id =  put.".$conf['user_fields']['id']."
             WHERE puit.status IN ('webmaster',  'admin')
               AND ".$conf['user_fields']['email']." IS NOT NULL
-              AND puit.user_id <> ".$user['id']."
+              AND puit.pwg_user_id <> ".$user['id']."
             ORDER BY username;";
 
       $result = pwg_query($sql);

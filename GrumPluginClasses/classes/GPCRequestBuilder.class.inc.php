@@ -406,7 +406,7 @@ class GPCRequestBuilder {
     $tablesDef=array(
 "CREATE TABLE `".self::$tables['request']."` (
   `id` int(10) unsigned NOT NULL auto_increment,
-  `user_id` int(10) unsigned NOT NULL,
+  `pwg_user_id` int(10) unsigned NOT NULL,
   `date` datetime NOT NULL,
   `num_items` int(10) unsigned NOT NULL default '0',
   `execution_time` float unsigned NOT NULL default '0',
@@ -687,7 +687,7 @@ var requestBuilderOptions = {
 
       ),
       'WHERE' => Array(),
-      'JOIN' => Array(999=>'pucc.user_id='.$user['id']),
+      'JOIN' => Array(999=>'pucc.pwg_user_id='.$user['id']),
       'GROUPBY' => Array(
         'pit.id'
       ),
@@ -880,7 +880,7 @@ var requestBuilderOptions = {
                           ON pucc.cat_id = pic.category_id",
       ),
       'WHERE' => Array(
-        'RB' => "pgrc.id=".$requestNumber." AND pucc.user_id=".$user['id'],
+        'RB' => "pgrc.id=".$requestNumber." AND pucc.pwg_user_id=".$user['id'],
         ),
       'JOIN' => Array(),
       'GROUPBY' => Array(
@@ -1191,7 +1191,7 @@ var requestBuilderOptions = {
   static private function getRequest($requestId)
   {
     $returned=false;
-    $sql="SELECT user_id, date, num_items, execution_time, connected_plugin, filter, parameters
+    $sql="SELECT pwg_user_id, date, num_items, execution_time, connected_plugin, filter, parameters
           FROM ".self::$tables['request']."
           WHERE id = $requestId";
     $result=pwg_query($sql);
