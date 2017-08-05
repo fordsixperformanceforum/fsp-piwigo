@@ -712,7 +712,7 @@ function get_default_user_info($convert_str=true)
     $query = '
 SELECT *
   FROM '.USER_INFOS_TABLE.'
-  WHERE pwg_user_id = '.$conf['default_pwg_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_user_id'].'
 ;';
 
     $result = pwg_query($query);
@@ -863,7 +863,7 @@ function create_user_infos($pwg_user_ids, $override_values=null)
         $level = max( $conf['available_permission_levels'] );
       }
       elseif (($pwg_user_id == $conf['guest_id']) or
-               ($pwg_user_id == $conf['default_pwg_user_id']))
+               ($pwg_user_id == $conf['default_user_id']))
       {
         $status = 'guest';
       }
