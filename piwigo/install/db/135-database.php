@@ -26,7 +26,7 @@ defined('PHPWG_ROOT_PATH') or die('Hacking attempt!');
 $upgrade_description = 'add nb available comments/tags';
 
 $query = 'ALTER TABLE '.USER_INFOS_TABLE.'
-ADD PRIMARY KEY (`user_id`) 
+ADD PRIMARY KEY (`pwg_user_id`) 
 , DROP INDEX `user_infos_ui1`';
 pwg_query($query);
 

@@ -115,7 +115,7 @@ SELECT
   if (isset($search['fields']['user'])
       and $search['fields']['user'] != -1)
   {
-    $clauses[] = 'user_id = '.$search['fields']['user'];
+    $clauses[] = 'pwg_user_id = '.$search['fields']['user'];
   }
 
   if (isset($search['fields']['image_id']))
@@ -153,7 +153,7 @@ SELECT
 SELECT
     date,
     time,
-    user_id,
+    pwg_user_id,
     IP,
     section,
     category_id,

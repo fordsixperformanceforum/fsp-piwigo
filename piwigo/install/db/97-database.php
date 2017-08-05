@@ -33,13 +33,13 @@ SELECT
     theme,
     language
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id = '.$conf['default_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_user_id'].'
 ;';
 $result = pwg_query($query);
 list($theme, $language) = pwg_db_fetch_row($result);
 
 $data = array(
-  'user_id' => $conf['default_user_id'],
+  'pwg_user_id' => $conf['default_user_id'],
   'theme' => empty($theme) ? 'Sylvia' : $theme,
   'language' => empty($language) ? 'en_UK' : $language,
   );
@@ -47,7 +47,7 @@ $data = array(
 mass_updates(
   USER_INFOS_TABLE,
   array(
-    'primary' => array('user_id'),
+    'primary' => array('pwg_user_id'),
     'update'  => array('theme', 'language')
     ),
   array(

@@ -366,7 +366,7 @@ SELECT id_uppercat, MAX(rank)+1 AS next_rank
             array_push(
               $granted_users,
               array(
-                $row['cat_id'] => array_push($granted_users[$row['cat_id']],$row['user_id'])
+                $row['cat_id'] => array_push($granted_users[$row['cat_id']],$row['pwg_user_id'])
               )
             );
           }
@@ -397,7 +397,7 @@ SELECT id_uppercat, MAX(rank)+1 AS next_rank
               foreach ($granted_users[$parent_id] as $granted_user)
               {
                 $insert_granted_users[] = array(
-                  'user_id' => $granted_user,
+                  'pwg_user_id' => $granted_user,
                   'cat_id' => $ids
                   );
               }
@@ -405,7 +405,7 @@ SELECT id_uppercat, MAX(rank)+1 AS next_rank
             foreach (get_admins() as $granted_user)
             {
               $insert_granted_users[] = array(
-                'user_id' => $granted_user,
+                'pwg_user_id' => $granted_user,
                 'cat_id' => $ids
                 );
             }
@@ -413,7 +413,7 @@ SELECT id_uppercat, MAX(rank)+1 AS next_rank
         }
         mass_inserts(GROUP_ACCESS_TABLE, array('group_id','cat_id'), $insert_granted_grps);
         $insert_granted_users=array_unique($insert_granted_users, SORT_REGULAR);
-        mass_inserts(USER_ACCESS_TABLE, array('user_id','cat_id'), $insert_granted_users);
+        mass_inserts(USER_ACCESS_TABLE, array('pwg_user_id','cat_id'), $insert_granted_users);
       }
       else
       {

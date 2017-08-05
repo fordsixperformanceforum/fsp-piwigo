@@ -49,7 +49,7 @@ SELECT COUNT(rate) AS count
       $query = 'SELECT rate
       FROM '.RATE_TABLE.'
       WHERE element_id = '.$page['image_id'] . '
-      AND user_id = '.$user['id'] ;
+      AND pwg_user_id = '.$user['id'] ;
 
       if ( !is_autorize_status(ACCESS_CLASSIC) )
       {

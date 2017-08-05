@@ -197,14 +197,14 @@ SELECT rules
 
   $page['search'] = unserialize($serialized_rules);
 
-  if (isset($_GET['user_id']))
+  if (isset($_GET['pwg_user_id']))
   {
-    if (!is_numeric($_GET['user_id']))
+    if (!is_numeric($_GET['pwg_user_id']))
     {
-      die('user_id GET parameter must be an integer value');
+      die('pwg_user_id GET parameter must be an integer value');
     }
 
-    $page['search']['fields']['user'] = $_GET['user_id'];
+    $page['search']['fields']['user'] = $_GET['pwg_user_id'];
 
     $query ='
 INSERT INTO '.SEARCH_TABLE.'
@@ -228,7 +228,7 @@ INSERT INTO '.SEARCH_TABLE.'
   $page['nb_lines'] = count($data);
 
   $history_lines = array();
-  $user_ids = array();
+  $pwg_user_ids = array();
   $username_of = array();
   $category_ids = array();
   $image_ids = array();
@@ -236,7 +236,7 @@ INSERT INTO '.SEARCH_TABLE.'
 
   foreach ($data as $row)
   {
-    $user_ids[$row['user_id']] = 1;
+    $pwg_user_ids[$row['pwg_user_id']] = 1;
 
     if (isset($row['category_id']))
     {
@@ -257,13 +257,13 @@ INSERT INTO '.SEARCH_TABLE.'
   }
 
   // prepare reference data (users, tags, categories...)
-  if (count($user_ids) > 0)
+  if (count($pwg_user_ids) > 0)
   {
     $query = '
 SELECT '.$conf['user_fields']['id'].' AS id
      , '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
-  WHERE id IN ('.implode(',', array_keys($user_ids)).')
+  WHERE id IN ('.implode(',', array_keys($pwg_user_ids)).')
 ;';
     $result = pwg_query($query);
 
@@ -340,7 +340,7 @@ SELECT
       $summary['total_filesize'] += @intval($image_infos[$line['image_id']]['filesize']);
     }
 
-    if ($line['user_id'] == $conf['guest_id'])
+    if ($line['pwg_user_id'] == $conf['guest_id'])
     {
       if (!isset($summary['guests_IP'][ $line['IP'] ]))
       {
@@ -358,18 +358,18 @@ SELECT
     }
 
     $user_string = '';
-    if (isset($username_of[$line['user_id']]))
+    if (isset($username_of[$line['pwg_user_id']]))
     {
-      $user_string.= $username_of[$line['user_id']];
+      $user_string.= $username_of[$line['pwg_user_id']];
     }
     else
     {
-      $user_string.= $line['user_id'];
+      $user_string.= $line['pwg_user_id'];
     }
     $user_string.= '&nbsp;<a href="';
     $user_string.= PHPWG_ROOT_PATH.'admin.php?page=history';
     $user_string.= '&amp;search_id='.$page['search_id'];
-    $user_string.= '&amp;user_id='.$line['user_id'];
+    $user_string.= '&amp;pwg_user_id='.$line['pwg_user_id'];
     $user_string.= '">+</a>';
 
     $tags_string = '';
@@ -484,12 +484,12 @@ SELECT
   $summary['nb_members'] = count($username_of);
 
   $member_strings = array();
-  foreach ($username_of as $user_id => $user_name)
+  foreach ($username_of as $pwg_user_id => $user_name)
   {
     $member_string = $user_name.'&nbsp;<a href="';
     $member_string.= get_root_url().'admin.php?page=history';
     $member_string.= '&amp;search_id='.$page['search_id'];
-    $member_string.= '&amp;user_id='.$user_id;
+    $member_string.= '&amp;pwg_user_id='.$pwg_user_id;
     $member_string.= '">+</a>';
 
     $member_strings[] = $member_string;

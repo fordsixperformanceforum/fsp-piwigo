@@ -71,7 +71,7 @@ SELECT
     ui.enabled_high,
     ui.level
   FROM '.USERS_TABLE.' AS u
-    INNER JOIN '.USER_INFOS_TABLE.' AS ui ON u.'.$conf['user_fields']['id'].' = ui.user_id
+    INNER JOIN '.USER_INFOS_TABLE.' AS ui ON u.'.$conf['user_fields']['id'].' = ui.pwg_user_id
   WHERE u.'.$conf['user_fields']['id'].' > 0
 ;';
 
@@ -79,13 +79,13 @@ $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result))
 {
   $users[] = $row;
-  $user_ids[] = $row['id'];
+  $pwg_user_ids[] = $row['id'];
 }
 
 $template->assign(
   array(
     'users' => $users,
-    'all_users' => join(',', $user_ids),
+    'all_users' => join(',', $pwg_user_ids),
     'ACTIVATE_COMMENTS' => $conf['activate_comments'],
     'Double_Password' => $conf['double_password_type_in_admin']
     )
@@ -107,11 +107,11 @@ if ('admin' == $user['status'])
 {
   $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-  $admin_ids = query2array($query, null, 'user_id');
+  $admin_ids = query2array($query, null, 'pwg_user_id');
   
   $protected_users = array_merge($protected_users, $admin_ids);
 

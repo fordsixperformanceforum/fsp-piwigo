@@ -66,7 +66,7 @@ $page['feed'] = find_available_feed_id();
 
 $query = '
 INSERT INTO '.USER_FEED_TABLE.'
-  (id, user_id, last_check)
+  (id, pwg_user_id, last_check)
   VALUES
   (\''.$page['feed'].'\', '.$user['id'].', NULL)
 ;';

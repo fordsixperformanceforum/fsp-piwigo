@@ -187,7 +187,7 @@ function custom_notification_query($action, $type, $start=null, $end=null)
           $field_id = 'category_id';
           break;
         case 'new_users':
-          $field_id = 'user_id';
+          $field_id = 'pwg_user_id';
           break;
       }
       $query = 'SELECT COUNT(DISTINCT '.$field_id.') '.$query.';';
@@ -213,7 +213,7 @@ function custom_notification_query($action, $type, $start=null, $end=null)
           $field_id = 'category_id';
           break;
         case 'new_users':
-          $field_id = 'user_id';
+          $field_id = 'pwg_user_id';
           break;
       }
       $query = 'SELECT DISTINCT '.$field_id.' '.$query.';';

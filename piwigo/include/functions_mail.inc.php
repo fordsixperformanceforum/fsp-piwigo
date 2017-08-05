@@ -448,14 +448,14 @@ SELECT
     u.'.$conf['user_fields']['email'].' AS email
   FROM '.USERS_TABLE.' AS u
     JOIN '.USER_INFOS_TABLE.' AS i
-    ON i.user_id =  u.'.$conf['user_fields']['id'].'
+    ON i.pwg_user_id =  u.'.$conf['user_fields']['id'].'
   WHERE i.status in (\''.implode("','", $user_statuses).'\')
     AND u.'.$conf['user_fields']['email'].' IS NOT NULL';
 
   if ($exclude_current_user)
   {
     $query.= '
-    AND i.user_id <> '.$user['id'];
+    AND i.pwg_user_id <> '.$user['id'];
   }
 
   $query.= '
@@ -502,9 +502,9 @@ function pwg_mail_group($group_id, $args=array(), $tpl=array())
 SELECT DISTINCT language
   FROM '.USER_GROUP_TABLE.' AS ug
     INNER JOIN '.USERS_TABLE.' AS u
-    ON '.$conf['user_fields']['id'].' = ug.user_id
+    ON '.$conf['user_fields']['id'].' = ug.pwg_user_id
     INNER JOIN '.USER_INFOS_TABLE.' AS ui
-    ON ui.user_id = ug.user_id
+    ON ui.pwg_user_id = ug.pwg_user_id
   WHERE group_id = '.$group_id.'
     AND '.$conf['user_fields']['email'].' <> ""';
   if (!empty($args['language_selected']))
@@ -527,15 +527,15 @@ SELECT DISTINCT language
     // get subset of users in this group for a specific language
     $query = '
 SELECT
-    ui.user_id,
+    ui.pwg_user_id,
     ui.status,
     u.'.$conf['user_fields']['username'].' AS name,
     u.'.$conf['user_fields']['email'].' AS email
   FROM '.USER_GROUP_TABLE.' AS ug
     INNER JOIN '.USERS_TABLE.' AS u
-    ON '.$conf['user_fields']['id'].' = ug.user_id
+    ON '.$conf['user_fields']['id'].' = ug.pwg_user_id
     INNER JOIN '.USER_INFOS_TABLE.' AS ui
-    ON ui.user_id = ug.user_id
+    ON ui.pwg_user_id = ug.pwg_user_id
   WHERE group_id = '.$group_id.'
     AND '.$conf['user_fields']['email'].' <> ""
     AND language = \''.$language.'\'
@@ -551,7 +551,7 @@ SELECT
 
     foreach ($users as $u)
     {
-      $authkey = create_user_auth_key($u['user_id'], $u['status']);
+      $authkey = create_user_auth_key($u['pwg_user_id'], $u['status']);
       
       $user_tpl = $tpl;
 

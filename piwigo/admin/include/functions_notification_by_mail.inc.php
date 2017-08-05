@@ -120,7 +120,7 @@ function get_user_notifications($action, $check_key_list = array(), $enabled_fil
 
     $query = '
 select
-  N.user_id,
+  N.pwg_user_id,
   N.check_key,
   U.'.$conf['user_fields']['username'].' as username,
   U.'.$conf['user_fields']['email'].' as mail_address,
@@ -128,8 +128,8 @@ select
   N.last_send,
   UI.status
 from '.USER_MAIL_NOTIFICATION_TABLE.' as N
-  JOIN '.USERS_TABLE.' as U on N.user_id =  U.'.$conf['user_fields']['id'].'
-  JOIN '.USER_INFOS_TABLE.' as UI on UI.user_id = N.user_id
+  JOIN '.USERS_TABLE.' as U on N.pwg_user_id =  U.'.$conf['user_fields']['id'].'
+  JOIN '.USER_INFOS_TABLE.' as UI on UI.pwg_user_id = N.pwg_user_id
 where 1=1';
 
     if ($action == 'send')
@@ -250,7 +250,7 @@ function set_user_on_env_nbm(&$nbm_user, $is_action_send)
 {
   global $user, $lang, $lang_info, $env_nbm;
 
-  $user = build_user( $nbm_user['user_id'], true );
+  $user = build_user( $nbm_user['pwg_user_id'], true );
 
   switch_lang_to($user['language']);
 

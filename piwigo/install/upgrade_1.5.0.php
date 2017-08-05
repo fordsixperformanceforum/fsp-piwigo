@@ -186,11 +186,11 @@ CREATE TABLE ".PREFIX_TABLE."search (
 
   "
 CREATE TABLE ".PREFIX_TABLE."user_mail_notification (
-  user_id smallint(5) NOT NULL default '0',
+  pwg_user_id smallint(5) NOT NULL default '0',
   check_key varchar(16) binary NOT NULL default '',
   enabled enum('true','false') NOT NULL default 'false',
   last_send datetime default NULL,
-  PRIMARY KEY  (user_id),
+  PRIMARY KEY  (pwg_user_id),
   UNIQUE KEY uidx_check_key (check_key)
 );",
 
@@ -226,7 +226,7 @@ ALTER TABLE ".PREFIX_TABLE."rate
 ;",
   "
 ALTER TABLE ".PREFIX_TABLE."rate
-  ADD PRIMARY KEY (element_id,user_id,anonymous_id)
+  ADD PRIMARY KEY (element_id,pwg_user_id,anonymous_id)
 ;",
   "
 UPDATE ".PREFIX_TABLE."rate
@@ -239,7 +239,7 @@ DELETE
 ;",
   "
 ALTER TABLE ".PREFIX_TABLE."sessions
-  DROP COLUMN user_id
+  DROP COLUMN pwg_user_id
 ;",
   "
 ALTER TABLE ".PREFIX_TABLE."sessions
@@ -265,12 +265,12 @@ UPDATE ".PREFIX_TABLE."user_infos
   "
 UPDATE ".PREFIX_TABLE."user_infos
   SET status = 'guest'
-  WHERE user_id = ".$conf['guest_id']."
+  WHERE pwg_user_id = ".$conf['guest_id']."
 ;",
   "
 UPDATE ".PREFIX_TABLE."user_infos
   SET status = 'webmaster'
-  WHERE user_id = ".$conf['webmaster_id']."
+  WHERE pwg_user_id = ".$conf['webmaster_id']."
 ;",
 
   "

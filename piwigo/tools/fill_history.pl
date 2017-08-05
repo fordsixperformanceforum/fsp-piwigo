@@ -66,14 +66,14 @@ $query = '
 SELECT id
   FROM '.$opt{prefix}.'users
 ';
-my @user_ids = keys %{ $dbh->selectall_hashref($query, 'id') };
+my @pwg_user_ids = keys %{ $dbh->selectall_hashref($query, 'id') };
 
 # set a list of IP addresses for each users
 my %user_IPs = ();
-foreach my $user_id (@user_ids) {
+foreach my $pwg_user_id (@pwg_user_ids) {
     for (1 .. 1 + int rand 5) {
         push(
-            @{ $user_IPs{$user_id} },
+            @{ $user_IPs{$pwg_user_id} },
             join(
                 '.',
                 map {1 + int rand 255} 1..4
@@ -176,11 +176,11 @@ my @sections = (
 
 my @inserts = ();
 
-USER : foreach my $user_id (@user_ids) {
-    print 'user_id: ', $user_id, "\n";
+USER : foreach my $pwg_user_id (@pwg_user_ids) {
+    print 'pwg_user_id: ', $pwg_user_id, "\n";
 
     my $current_unixtime = $start_unixtime;
-    my @IPs = @{ $user_IPs{$user_id} };
+    my @IPs = @{ $user_IPs{$pwg_user_id} };
 
     VISIT : foreach my $visit_num (1..100_000) {
         print 'visit: ', $visit_num, "\n";
@@ -252,7 +252,7 @@ USER : foreach my $user_id (@user_ids) {
             $temp_insert->{hour} = $hour;
             $temp_insert->{IP} = $IP;
             $temp_insert->{section} = $section;
-            $temp_insert->{user_id} = $user_id;
+            $temp_insert->{pwg_user_id} = $pwg_user_id;
 
             push(@inserts, $temp_insert);
         }
@@ -268,7 +268,7 @@ if (scalar @inserts) {
     my @columns =
         qw/
               date time year month day hour
-              user_id IP
+              pwg_user_id IP
               section category_id image_id
           /;
 

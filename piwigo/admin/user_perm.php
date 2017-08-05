@@ -37,13 +37,13 @@ check_status(ACCESS_ADMINISTRATOR);
 // |                            variables init                             |
 // +-----------------------------------------------------------------------+
 
-if (isset($_GET['user_id']) and is_numeric($_GET['user_id']))
+if (isset($_GET['pwg_user_id']) and is_numeric($_GET['pwg_user_id']))
 {
-  $page['user'] = $_GET['user_id'];
+  $page['user'] = $_GET['pwg_user_id'];
 }
 else
 {
-  die('user_id URL parameter is missing');
+  die('pwg_user_id URL parameter is missing');
 }
 
 // +-----------------------------------------------------------------------+
@@ -59,7 +59,7 @@ if (isset($_POST['falsify'])
   $subcats = get_subcat_ids($_POST['cat_true']);
   $query = '
 DELETE FROM '.USER_ACCESS_TABLE.'
-  WHERE user_id = '.$page['user'].'
+  WHERE pwg_user_id = '.$page['user'].'
     AND cat_id IN ('.implode(',', $subcats).')
 ;';
   pwg_query($query);
@@ -95,7 +95,7 @@ $template->assign(
     'F_ACTION' =>
         PHPWG_ROOT_PATH.
         'admin.php?page=user_perm'.
-        '&amp;user_id='.$page['user']
+        '&amp;pwg_user_id='.$page['user']
     )
   );
 
@@ -110,7 +110,7 @@ SELECT DISTINCT cat_id, c.uppercats, c.global_rank
       ON ug.group_id = ga.group_id
     INNER JOIN '.CATEGORIES_TABLE.' AS c
       ON c.id = ga.cat_id
-  WHERE ug.user_id = '.$page['user'].'
+  WHERE ug.pwg_user_id = '.$page['user'].'
 ;';
 $result = pwg_query($query);
 
@@ -138,7 +138,7 @@ $query_true = '
 SELECT id,name,uppercats,global_rank
   FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_ACCESS_TABLE.' ON cat_id = id
   WHERE status = \'private\'
-    AND user_id = '.$page['user'];
+    AND pwg_user_id = '.$page['user'];
 if (count($group_authorized) > 0)
 {
   $query_true.= '

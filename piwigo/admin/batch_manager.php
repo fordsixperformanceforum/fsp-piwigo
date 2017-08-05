@@ -53,7 +53,7 @@ if (isset($_GET['action']))
   {
     $query = '
 DELETE FROM '.CADDIE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
     pwg_query($query);
 
@@ -303,7 +303,7 @@ if (isset($_SESSION['bulk_manager_filter']['prefilter']))
     $query = '
 SELECT element_id
   FROM '.CADDIE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
     $filter_sets[] = query2array($query, null, 'element_id');
 
@@ -313,7 +313,7 @@ SELECT element_id
     $query = '
 SELECT image_id
   FROM '.FAVORITES_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
     $filter_sets[] = query2array($query, null, 'image_id');
 

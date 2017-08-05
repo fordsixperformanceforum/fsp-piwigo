@@ -27,14 +27,14 @@
  * @param mixed[] $params
  *    @option int[] cat_id (optional)
  *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
+ *    @option int[] pwg_user_id (optional)
  */
 function ws_permissions_getList($params, &$service)
 {
-  $my_params = array_intersect(array_keys($params), array('cat_id','group_id','user_id'));
+  $my_params = array_intersect(array_keys($params), array('cat_id','group_id','pwg_user_id'));
   if (count($my_params) > 1)
   {
-    return new PwgError(WS_ERR_INVALID_PARAM, 'Too many parameters, provide cat_id OR user_id OR group_id');
+    return new PwgError(WS_ERR_INVALID_PARAM, 'Too many parameters, provide cat_id OR pwg_user_id OR group_id');
   }
 
   $cat_filter = '';
@@ -47,7 +47,7 @@ function ws_permissions_getList($params, &$service)
 
   // direct users
   $query = '
-SELECT user_id, cat_id
+SELECT pwg_user_id, cat_id
   FROM '. USER_ACCESS_TABLE .'
   '. $cat_filter .'
 ;';
@@ -59,12 +59,12 @@ SELECT user_id, cat_id
     {
       $perms[ $row['cat_id'] ]['id'] = intval($row['cat_id']);
     }
-    $perms[ $row['cat_id'] ]['users'][] = intval($row['user_id']);
+    $perms[ $row['cat_id'] ]['users'][] = intval($row['pwg_user_id']);
   }
 
   // indirect users
   $query = '
-SELECT ug.user_id, ga.cat_id
+SELECT ug.pwg_user_id, ga.cat_id
   FROM '. USER_GROUP_TABLE .' AS ug
     INNER JOIN '. GROUP_ACCESS_TABLE .' AS ga
     ON ug.group_id = ga.group_id
@@ -78,7 +78,7 @@ SELECT ug.user_id, ga.cat_id
     {
       $perms[ $row['cat_id'] ]['id'] = intval($row['cat_id']);
     }
-    $perms[ $row['cat_id'] ]['users_indirect'][] = intval($row['user_id']);
+    $perms[ $row['cat_id'] ]['users_indirect'][] = intval($row['pwg_user_id']);
   }
 
   // groups
@@ -109,11 +109,11 @@ SELECT group_id, cat_id
         continue;
       }
     }
-    if (isset($filters['user_id']))
+    if (isset($filters['pwg_user_id']))
     {
       if (
-        (empty($cat['users_indirect']) or count(array_intersect($cat['users_indirect'], $params['user_id'])) == 0)
-        and (empty($cat['users']) or count(array_intersect($cat['users'], $params['user_id'])) == 0)
+        (empty($cat['users_indirect']) or count(array_intersect($cat['users_indirect'], $params['pwg_user_id'])) == 0)
+        and (empty($cat['users']) or count(array_intersect($cat['users'], $params['pwg_user_id'])) == 0)
       ) {
         unset($perms[$cat_id]);
         continue;
@@ -141,7 +141,7 @@ SELECT group_id, cat_id
  * @param mixed[] $params
  *    @option int[] cat_id
  *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
+ *    @option int[] pwg_user_id (optional)
  *    @option bool recursive
  */
 function ws_permissions_add($params, &$service)
@@ -189,10 +189,10 @@ SELECT id
       );
   }
 
-  if (!empty($params['user_id']))
+  if (!empty($params['pwg_user_id']))
   {
     if ($params['recursive']) $_POST['apply_on_sub'] = true;
-    add_permission_on_category($params['cat_id'], $params['user_id']);
+    add_permission_on_category($params['cat_id'], $params['pwg_user_id']);
   }
 
   return $service->invoke('pwg.permissions.getList', array('cat_id'=>$params['cat_id']));
@@ -204,7 +204,7 @@ SELECT id
  * @param mixed[] $params
  *    @option int[] cat_id
  *    @option int[] group_id (optional)
- *    @option int[] user_id (optional)
+ *    @option int[] pwg_user_id (optional)
  */
 function ws_permissions_remove($params, &$service)
 {
@@ -228,12 +228,12 @@ DELETE
     pwg_query($query);
   }
 
-  if (!empty($params['user_id']))
+  if (!empty($params['pwg_user_id']))
   {
     $query = '
 DELETE
   FROM '. USER_ACCESS_TABLE .'
-  WHERE user_id IN ('. implode(',', $params['user_id']) .')
+  WHERE pwg_user_id IN ('. implode(',', $params['pwg_user_id']) .')
     AND cat_id IN ('. implode(',', $cat_ids) .')
 ;';
     pwg_query($query);

@@ -242,7 +242,7 @@ SELECT COUNT(*)
       while ($row = pwg_db_fetch_assoc($res))
       {
         $new_usr_grp= array(
-          'user_id' => $row['user_id'],
+          'pwg_user_id' => $row['pwg_user_id'],
           'group_id' => $groupid
         );
         if (!in_array($new_usr_grp,$usr_grp))
@@ -251,7 +251,7 @@ SELECT COUNT(*)
         }
       }
     }
-    mass_inserts(USER_GROUP_TABLE, array('user_id','group_id'), $usr_grp);
+    mass_inserts(USER_GROUP_TABLE, array('pwg_user_id','group_id'), $usr_grp);
     mass_inserts(GROUP_ACCESS_TABLE, array('group_id','cat_id'), $grp_access);
     
     $page['infos'][] = l10n('group "%s" added', $_POST['merge']);
@@ -322,11 +322,11 @@ SELECT COUNT(*)
       while ($row = pwg_db_fetch_assoc($res))
       {
           $usr_grp[] = array(
-            'user_id' => $row['user_id'],
+            'pwg_user_id' => $row['pwg_user_id'],
             'group_id' => $groupid
           );
       }
-      mass_inserts(USER_GROUP_TABLE, array('user_id','group_id'), $usr_grp);
+      mass_inserts(USER_GROUP_TABLE, array('pwg_user_id','group_id'), $usr_grp);
   
       $page['infos'][] = l10n('group "%s" added', $_POST['duplicate_'.$group.'']);
     }
@@ -397,7 +397,7 @@ while ($row = pwg_db_fetch_assoc($result))
 SELECT u.'. $conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.' AS u
   INNER JOIN '.USER_GROUP_TABLE.' AS ug
-    ON u.'.$conf['user_fields']['id'].' = ug.user_id
+    ON u.'.$conf['user_fields']['id'].' = ug.pwg_user_id
   WHERE ug.group_id = '.$row['id'].'
 ;';
   $members=array();

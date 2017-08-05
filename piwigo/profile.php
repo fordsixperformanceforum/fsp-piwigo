@@ -57,7 +57,7 @@ if (!defined('PHPWG_ROOT_PATH'))
     $query = '
 SELECT '.implode(',', $fields).'
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id = '.$conf['default_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_user_id'].'
 ;';
     $result = pwg_query($query);
     $default_user = pwg_db_fetch_assoc($result);
@@ -271,7 +271,7 @@ function save_profile_from_post($userdata, &$errors)
       }
 
       $data = array();
-      $data['user_id'] = $userdata['id'];
+      $data['pwg_user_id'] = $userdata['id'];
 
       foreach ($fields as $field)
       {
@@ -281,7 +281,7 @@ function save_profile_from_post($userdata, &$errors)
         }
       }
       mass_updates(USER_INFOS_TABLE,
-                   array('primary' => array('user_id'), 'update' => $fields),
+                   array('primary' => array('pwg_user_id'), 'update' => $fields),
                    array($data));
     }
     trigger_notify( 'save_profile_from_post', $userdata['id'] );

@@ -68,7 +68,7 @@ function rate_picture($image_id, $rate)
       $query = '
 SELECT element_id
   FROM '.RATE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
     AND anonymous_id = \''.$anonymous_id.'\'
 ;';
       $already_there = array_from_query($query, 'element_id');
@@ -78,7 +78,7 @@ SELECT element_id
         $query = '
 DELETE
   FROM '.RATE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
     AND anonymous_id = \''.$save_anonymous_id.'\'
     AND element_id IN ('.implode(',', $already_there).')
 ;';
@@ -88,7 +88,7 @@ DELETE
        $query = '
 UPDATE '.RATE_TABLE.'
   SET anonymous_id = \'' .$anonymous_id.'\'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
     AND anonymous_id = \'' . $save_anonymous_id.'\'
 ;';
        pwg_query($query);
@@ -101,7 +101,7 @@ UPDATE '.RATE_TABLE.'
 DELETE
   FROM '.RATE_TABLE.'
   WHERE element_id = '.$image_id.'
-    AND user_id = '.$user['id'].'
+    AND pwg_user_id = '.$user['id'].'
 ';
   if ($user_anonymous)
   {
@@ -111,7 +111,7 @@ DELETE
   $query = '
 INSERT
   INTO '.RATE_TABLE.'
-  (user_id,anonymous_id,element_id,rate,date)
+  (pwg_user_id,anonymous_id,element_id,rate,date)
   VALUES
   ('
     .$user['id'].','

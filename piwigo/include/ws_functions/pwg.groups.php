@@ -44,7 +44,7 @@ function ws_groups_getList($params, &$service)
 
   $query = '
 SELECT
-    g.*, COUNT(user_id) AS nb_users
+    g.*, COUNT(pwg_user_id) AS nb_users
   FROM '. GROUPS_TABLE .' AS g
     LEFT JOIN '. USER_GROUP_TABLE .' AS ug
     ON ug.group_id = g.id
@@ -222,7 +222,7 @@ SELECT COUNT(*)
  * Adds user(s) to a group
  * @param mixed[] $params
  *    @option int group_id
- *    @option int[] user_id
+ *    @option int[] pwg_user_id
  */
 function ws_groups_addUser($params, &$service)
 {
@@ -244,17 +244,17 @@ SELECT COUNT(*)
   }
 
   $inserts = array();
-  foreach ($params['user_id'] as $user_id)
+  foreach ($params['pwg_user_id'] as $pwg_user_id)
   {
     $inserts[] = array(
       'group_id' => $params['group_id'],
-      'user_id' => $user_id,
+      'pwg_user_id' => $pwg_user_id,
       );
   }
 
   mass_inserts(
     USER_GROUP_TABLE,
-    array('group_id', 'user_id'),
+    array('group_id', 'pwg_user_id'),
     $inserts,
     array('ignore'=>true)
     );
@@ -270,7 +270,7 @@ SELECT COUNT(*)
  * Removes user(s) from a group
  * @param mixed[] $params
  *    @option int group_id
- *    @option int[] user_id
+ *    @option int[] pwg_user_id
  */
 function ws_groups_deleteUser($params, &$service)
 {
@@ -295,7 +295,7 @@ SELECT COUNT(*)
 DELETE FROM '. USER_GROUP_TABLE .'
   WHERE
     group_id = '. $params['group_id'] .'
-    AND user_id IN('. implode(',', $params['user_id']) .')
+    AND pwg_user_id IN('. implode(',', $params['pwg_user_id']) .')
 ;';
   pwg_query($query);
 

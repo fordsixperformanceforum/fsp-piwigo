@@ -126,7 +126,7 @@ class c13y_internal
   select u.'.$conf['user_fields']['id'].' as id, ui.status
   from '.USERS_TABLE.' as u
     left join '.USER_INFOS_TABLE.' as ui
-        on u.'.$conf['user_fields']['id'].' = ui.user_id
+        on u.'.$conf['user_fields']['id'].' = ui.pwg_user_id
   where
     u.'.$conf['user_fields']['id'].' in ('.implode(',', array_keys($c13y_users)).')
   ;';
@@ -159,7 +159,7 @@ class c13y_internal
   /**
    * Do correction user
    *
-   * @param user_id, action
+   * @param pwg_user_id, action
    * @return boolean true if ok else false
    */
   function c13y_correction_user($id, $action)
@@ -235,12 +235,12 @@ class c13y_internal
           {
             $updates = array(
               array(
-                'user_id' => $id,
+                'pwg_user_id' => $id,
                 'status'  => $status
                 ),
               );
             mass_updates(USER_INFOS_TABLE,
-              array('primary' => array('user_id'),'update' => array('status')),
+              array('primary' => array('pwg_user_id'),'update' => array('status')),
               $updates);
 
             $page['infos'][] = sprintf(l10n('Status of user "%s" updated'), get_username($id));

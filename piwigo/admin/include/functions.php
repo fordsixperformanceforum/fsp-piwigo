@@ -368,9 +368,9 @@ SELECT
  * It also deletes all related data (accesses, favorites, permissions, etc.)
  * @todo : accept array input
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  */
-function delete_user($user_id)
+function delete_user($pwg_user_id)
 {
   global $conf;
   $tables = array(
@@ -399,22 +399,22 @@ function delete_user($user_id)
   {
     $query = '
 DELETE FROM '.$table.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ;';
     pwg_query($query);
   }
 
   // purge of sessions
-  delete_user_sessions($user_id);
+  delete_user_sessions($pwg_user_id);
 
   // destruction of the user
   $query = '
 DELETE FROM '.USERS_TABLE.'
-  WHERE '.$conf['user_fields']['id'].' = '.$user_id.'
+  WHERE '.$conf['user_fields']['id'].' = '.$pwg_user_id.'
 ;';
   pwg_query($query);
 
-  trigger_notify('delete_user', $user_id);
+  trigger_notify('delete_user', $pwg_user_id);
 }
 
 /**
@@ -879,7 +879,7 @@ SELECT
     }
 
     $tables = array(
-      USER_ACCESS_TABLE => 'user_id',
+      USER_ACCESS_TABLE => 'pwg_user_id',
       GROUP_ACCESS_TABLE => 'group_id'
       );
 
@@ -1174,10 +1174,10 @@ SELECT '.$conf['user_fields']['id'].' AS id
   $base_users = query2array($query, null, 'id');
 
   $query = '
-SELECT user_id
+SELECT pwg_user_id
   FROM '.USER_INFOS_TABLE.'
 ;';
-  $infos_users = query2array($query, null, 'user_id');
+  $infos_users = query2array($query, null, 'pwg_user_id');
 
   // users present in $base_users and not in $infos_users must be added
   $to_create = array_diff($base_users, $infos_users);
@@ -1202,11 +1202,11 @@ SELECT user_id
   foreach ($tables as $table)
   {
     $query = '
-SELECT DISTINCT user_id
+SELECT DISTINCT pwg_user_id
   FROM '.$table.'
 ;';
     $to_delete = array_diff(
-      query2array($query, null, 'user_id'),
+      query2array($query, null, 'pwg_user_id'),
       $base_users
       );
 
@@ -1215,7 +1215,7 @@ SELECT DISTINCT user_id
       $query = '
 DELETE
   FROM '.$table.'
-  WHERE user_id in ('.implode(',', $to_delete).')
+  WHERE pwg_user_id in ('.implode(',', $to_delete).')
 ;';
       pwg_query($query);
     }
@@ -1342,7 +1342,7 @@ SELECT uppercats
   }
 
   $tables = array(
-    USER_ACCESS_TABLE => 'user_id',
+    USER_ACCESS_TABLE => 'pwg_user_id',
     GROUP_ACCESS_TABLE => 'group_id'
     );
 
@@ -1534,11 +1534,11 @@ SELECT id, uppercats, global_rank, visible, status
     mass_inserts(GROUP_ACCESS_TABLE, array('group_id','cat_id'), $inserts);
 
     $query = '
-      SELECT user_id
+      SELECT pwg_user_id
       FROM '.USER_ACCESS_TABLE.'
       WHERE cat_id = '.$insert['id_uppercat'].'
     ;';
-    $granted_users =  query2array($query, null, 'user_id');
+    $granted_users =  query2array($query, null, 'pwg_user_id');
     add_permission_on_category($inserted_id, array_unique(array_merge(get_admins(), array($user['id']), $granted_users)));
   }
   elseif ('private' == $insert['status'])
@@ -2418,17 +2418,17 @@ SELECT name
 /**
  * Returns the username corresponding to the given user identifier if exists.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @return string|false
  */
-function get_username($user_id)
+function get_username($pwg_user_id)
 {
   global $conf;
 
   $query = '
 SELECT '.$conf['user_fields']['username'].'
   FROM '.USERS_TABLE.'
-  WHERE '.$conf['user_fields']['id'].' = '.intval($user_id).'
+  WHERE '.$conf['user_fields']['id'].' = '.intval($pwg_user_id).'
 ;';
   $result = pwg_query($query);
   if (pwg_db_num_rows($result) > 0)
@@ -2628,21 +2628,21 @@ function order_by_name($element_ids, $name)
  * Grant access to a list of categories for a list of users.
  *
  * @param int[] $category_ids
- * @param int[] $user_ids
+ * @param int[] $pwg_user_ids
  */
-function add_permission_on_category($category_ids, $user_ids)
+function add_permission_on_category($category_ids, $pwg_user_ids)
 {
   if (!is_array($category_ids))
   {
     $category_ids = array($category_ids);
   }
-  if (!is_array($user_ids))
+  if (!is_array($pwg_user_ids))
   {
-    $user_ids = array($user_ids);
+    $pwg_user_ids = array($pwg_user_ids);
   }
 
   // check for emptiness
-  if (count($category_ids) == 0 or count($user_ids) == 0)
+  if (count($category_ids) == 0 or count($pwg_user_ids) == 0)
   {
     return;
   }
@@ -2670,10 +2670,10 @@ SELECT id
   $inserts = array();
   foreach ($private_cats as $cat_id)
   {
-    foreach ($user_ids as $user_id)
+    foreach ($pwg_user_ids as $pwg_user_id)
     {
       $inserts[] = array(
-        'user_id' => $user_id,
+        'pwg_user_id' => $pwg_user_id,
         'cat_id' => $cat_id
         );
     }
@@ -2681,7 +2681,7 @@ SELECT id
 
   mass_inserts(
     USER_ACCESS_TABLE,
-    array('user_id','cat_id'),
+    array('pwg_user_id','cat_id'),
     $inserts,
     array('ignore'=>true)
     );
@@ -2704,12 +2704,12 @@ function get_admins($include_webmaster=true)
 
   $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status in (\''.implode("','", $status_list).'\')
 ;';
 
-  return query2array($query, null, 'user_id');
+  return query2array($query, null, 'pwg_user_id');
 }
 
 /**

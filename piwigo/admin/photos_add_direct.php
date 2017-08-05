@@ -36,7 +36,7 @@ if (isset($_GET['batch']))
 
   $query = '
 DELETE FROM '.CADDIE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
   pwg_query($query);
 
@@ -44,7 +44,7 @@ DELETE FROM '.CADDIE_TABLE.'
   foreach (explode(',', $_GET['batch']) as $image_id)
   {
     $inserts[] = array(
-      'user_id' => $user['id'],
+      'pwg_user_id' => $user['id'],
       'element_id' => $image_id,
       );
   }

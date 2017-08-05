@@ -51,10 +51,10 @@ $aColumns = array(
 $aColumns = trigger_change('user_list_columns', $aColumns);
 	
 /* Indexed column (used for fast and accurate table cardinality) */
-$sIndexColumn = 'user_id';
+$sIndexColumn = 'pwg_user_id';
 	
 /* DB table to use */
-$sTable = USERS_TABLE.' INNER JOIN '.USER_INFOS_TABLE.' AS ui ON '.$conf['user_fields']['id'].' = ui.user_id';
+$sTable = USERS_TABLE.' INNER JOIN '.USER_INFOS_TABLE.' AS ui ON '.$conf['user_fields']['id'].' = ui.pwg_user_id';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * If you just want to use the basic configuration for DataTables with PHP server-side, there is
@@ -170,11 +170,11 @@ $output = array(
   "aaData" => array()
 	);
 
-$user_ids = array();
+$pwg_user_ids = array();
 
 while ( $aRow = pwg_db_fetch_array( $rResult ) )
 {
-  $user_ids[] = $aRow[ $conf['user_fields']['id'] ];
+  $pwg_user_ids[] = $aRow[ $conf['user_fields']['id'] ];
   
   $row = array();
   for ( $i=0 ; $i<count($aColumns) ; $i++ )
@@ -207,23 +207,23 @@ while ( $aRow = pwg_db_fetch_array( $rResult ) )
 }
 
 // replace "recent_period" by the list of groups
-if (count($user_ids) > 0)
+if (count($pwg_user_ids) > 0)
 {
   $groups_of_user = array();
   
   $query = '
 SELECT
-    user_id,
+    pwg_user_id,
     GROUP_CONCAT(name ORDER BY name SEPARATOR ", ") AS groups
   FROM '.USER_GROUP_TABLE.'
     JOIN '.GROUPS_TABLE.' ON id = group_id
-  WHERE user_id IN ('.implode(',', $user_ids).')
-  GROUP BY user_id
+  WHERE pwg_user_id IN ('.implode(',', $pwg_user_ids).')
+  GROUP BY pwg_user_id
 ;';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $groups_of_user[ $row['user_id'] ] = $row['groups'];
+    $groups_of_user[ $row['pwg_user_id'] ] = $row['groups'];
   }
 
   $key_replace = array_search('recent_period', $aColumns);
@@ -231,8 +231,8 @@ SELECT
   // replacement
   foreach (array_keys($output['aaData']) as $idx)
   {
-    $user_id = $output['aaData'][$idx][0];
-    $output['aaData'][$idx][$key_replace] = isset($groups_of_user[$user_id]) ? $groups_of_user[$user_id] : '';
+    $pwg_user_id = $output['aaData'][$idx][0];
+    $output['aaData'][$idx][$key_replace] = isset($groups_of_user[$pwg_user_id]) ? $groups_of_user[$pwg_user_id] : '';
   }
 }
 

@@ -48,7 +48,7 @@ $query = 'SELECT DISTINCT
   u.'.$conf['user_fields']['username'].' AS name,
   ui.status
   FROM '.USERS_TABLE.' AS u INNER JOIN '.USER_INFOS_TABLE.' AS ui
-    ON u.'.$conf['user_fields']['id'].' = ui.user_id';
+    ON u.'.$conf['user_fields']['id'].' = ui.pwg_user_id';
 
 $users_by_id = array();
 $result = pwg_query($query);
@@ -74,11 +74,11 @@ SELECT * FROM '.RATE_TABLE.' ORDER by date DESC';
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result))
 {
-  if (!isset($users_by_id[$row['user_id']]))
+  if (!isset($users_by_id[$row['pwg_user_id']]))
   {
-    $users_by_id[$row['user_id']] = array('name' => '???'.$row['user_id'], 'anon' => false);
+    $users_by_id[$row['pwg_user_id']] = array('name' => '???'.$row['pwg_user_id'], 'anon' => false);
   }
-  $usr = $users_by_id[$row['user_id']];
+  $usr = $users_by_id[$row['pwg_user_id']];
   if ($usr['anon'])
   {
     $user_key = $usr['name'].'('.$row['anonymous_id'].')';
@@ -91,7 +91,7 @@ while ($row = pwg_db_fetch_assoc($result))
   if ( is_null($rating) )
   {
     $rating = $by_user_rating_model;
-    $rating['uid'] = (int)$row['user_id'];
+    $rating['uid'] = (int)$row['pwg_user_id'];
     $rating['aid'] = $usr['anon'] ? $row['anonymous_id'] : '';
     $rating['last_date'] = $rating['first_date'] = $row['date'];
   }

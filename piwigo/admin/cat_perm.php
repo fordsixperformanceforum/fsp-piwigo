@@ -131,11 +131,11 @@ SELECT id
     // users
     //
     $query = '
-SELECT user_id
+SELECT pwg_user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-    $users_granted = array_from_query($query, 'user_id');
+    $users_granted = array_from_query($query, 'pwg_user_id');
 
     if (!isset($_POST['users']))
     {
@@ -153,7 +153,7 @@ SELECT user_id
       $query = '
 DELETE
   FROM '.USER_ACCESS_TABLE.'
-  WHERE user_id IN ('.implode(',', $deny_users).')
+  WHERE pwg_user_id IN ('.implode(',', $deny_users).')
     AND cat_id IN ('.implode(',', get_subcat_ids(array($page['cat']))).')
 ;';
       pwg_query($query);
@@ -230,11 +230,11 @@ $template->assign('users', $users);
 
 
 $query = '
-SELECT user_id
+SELECT pwg_user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$page['cat'].'
 ;';
-$user_granted_direct_ids = array_from_query($query, 'user_id');
+$user_granted_direct_ids = array_from_query($query, 'pwg_user_id');
 $template->assign('users_selected', $user_granted_direct_ids);
 
 
@@ -244,7 +244,7 @@ if (count($group_granted_ids) > 0)
   $granted_groups = array();
 
   $query = '
-SELECT user_id, group_id
+SELECT pwg_user_id, group_id
   FROM '.USER_GROUP_TABLE.'
   WHERE group_id IN ('.implode(',', $group_granted_ids).') 
 ';
@@ -255,7 +255,7 @@ SELECT user_id, group_id
     {
       $granted_groups[ $row['group_id'] ] = array();
     }
-    $granted_groups[ $row['group_id'] ][] = $row['user_id'];
+    $granted_groups[ $row['group_id'] ][] = $row['pwg_user_id'];
   }
 
   $user_granted_by_group_ids = array();
@@ -277,11 +277,11 @@ SELECT user_id, group_id
   foreach ($granted_groups as $group_id => $group_users)
   {
     $group_usernames = array();
-    foreach ($group_users as $user_id)
+    foreach ($group_users as $pwg_user_id)
     {
-      if (in_array($user_id, $user_granted_indirect_ids))
+      if (in_array($pwg_user_id, $user_granted_indirect_ids))
       {
-        $group_usernames[] = $users[$user_id];
+        $group_usernames[] = $users[$pwg_user_id];
       }
     }
 

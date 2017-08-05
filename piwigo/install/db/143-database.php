@@ -26,7 +26,7 @@ if (!defined('PHPWG_ROOT_PATH'))
   die('Hacking attempt!');
 }
 
-$upgrade_description = 'enlarge your user_id (16 millions possible users)';
+$upgrade_description = 'enlarge your pwg_user_id (16 millions possible users)';
 
 // we use PREFIX_TABLE, in case Piwigo uses an external user table
 pwg_query('ALTER TABLE '.PREFIX_TABLE.'users CHANGE id id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT;');
@@ -51,7 +51,7 @@ foreach ($tables as $table)
 {
   pwg_query('
 ALTER TABLE '.$table.'
-  CHANGE user_id user_id MEDIUMINT UNSIGNED NOT NULL DEFAULT \'0\'
+  CHANGE pwg_user_id pwg_user_id MEDIUMINT UNSIGNED NOT NULL DEFAULT \'0\'
 ;');
 }
 

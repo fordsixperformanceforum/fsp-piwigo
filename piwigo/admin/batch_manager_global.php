@@ -98,7 +98,7 @@ if (isset($_POST['submit']))
 DELETE
   FROM '.CADDIE_TABLE.'
   WHERE element_id IN ('.implode(',', $collection).')
-    AND user_id = '.$user['id'].'
+    AND pwg_user_id = '.$user['id'].'
 ;';
     pwg_query($query);
 

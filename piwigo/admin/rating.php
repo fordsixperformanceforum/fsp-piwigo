@@ -69,11 +69,11 @@ if (isset($_GET['users']))
 {
   if ($_GET['users'] == 'user')
   {
-    $page['user_filter'] = ' AND r.user_id <> '.$conf['guest_id'];
+    $page['user_filter'] = ' AND r.pwg_user_id <> '.$conf['guest_id'];
   }
   elseif ($_GET['users'] == 'guest')
   {
-    $page['user_filter'] = ' AND r.user_id = '.$conf['guest_id'];
+    $page['user_filter'] = ' AND r.pwg_user_id = '.$conf['guest_id'];
   }
 }
 
@@ -240,13 +240,13 @@ ORDER BY date DESC;';
 
   while ($row = pwg_db_fetch_assoc($result))
   {
-    if ( isset($users[$row['user_id']]) )
+    if ( isset($users[$row['pwg_user_id']]) )
     {
-      $user_rate = $users[$row['user_id']];
+      $user_rate = $users[$row['pwg_user_id']];
     }
     else
     {
-      $user_rate = '? '. $row['user_id'];
+      $user_rate = '? '. $row['pwg_user_id'];
     }
     if ( strlen($row['anonymous_id'])>0 )
     {

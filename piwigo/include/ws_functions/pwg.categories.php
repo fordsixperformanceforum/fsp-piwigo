@@ -238,7 +238,7 @@ SELECT
     date_last, max_date_last, count_categories AS nb_categories
   FROM '. CATEGORIES_TABLE .'
     '.$join_type.' JOIN '. USER_CACHE_CATEGORIES_TABLE .'
-    ON id=cat_id AND user_id='.$join_user.'
+    ON id=cat_id AND pwg_user_id='.$join_user.'
   WHERE '. implode("\n    AND ", $where) .'
 ;';
   $result = pwg_query($query);
@@ -317,7 +317,7 @@ SELECT
 SELECT representative_picture_id
   FROM '. CATEGORIES_TABLE .'
     INNER JOIN '. USER_CACHE_CATEGORIES_TABLE .'
-    ON id=cat_id AND user_id='.$user['id'].'
+    ON id=cat_id AND pwg_user_id='.$user['id'].'
   WHERE uppercats LIKE \''.$row['uppercats'].',%\'
     AND representative_picture_id IS NOT NULL
         '.get_sql_condition_FandF(
@@ -431,7 +431,7 @@ SELECT id, path, representative_ext
     foreach ($user_representative_updates_for as $cat_id => $image_id)
     {
       $updates[] = array(
-        'user_id' => $user['id'],
+        'pwg_user_id' => $user['id'],
         'cat_id' => $cat_id,
         'user_representative_picture_id' => $image_id,
         );
@@ -440,7 +440,7 @@ SELECT id, path, representative_ext
     mass_updates(
       USER_CACHE_CATEGORIES_TABLE,
       array(
-        'primary' => array('user_id', 'cat_id'),
+        'primary' => array('pwg_user_id', 'cat_id'),
         'update'  => array('user_representative_picture_id')
         ),
       $updates

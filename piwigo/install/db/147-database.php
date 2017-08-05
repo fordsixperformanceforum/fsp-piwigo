@@ -33,7 +33,7 @@ pwg_query('
 CREATE TABLE `'.PREFIX_TABLE.'user_auth_keys` (
   `auth_key_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `auth_key` varchar(255) NOT NULL,
-  `user_id` mediumint(8) unsigned NOT NULL,
+  `pwg_user_id` mediumint(8) unsigned NOT NULL,
   `created_on` datetime NOT NULL,
   `duration` int(11) unsigned DEFAULT NULL,
   `expired_on` datetime NOT NULL,

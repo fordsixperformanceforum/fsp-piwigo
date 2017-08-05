@@ -315,7 +315,7 @@ function ws_addDefaultMethods( $arr )
       'pwg.rates.delete',
       'ws_rates_delete',
       array(
-        'user_id' =>      array('type'=>WS_TYPE_ID),
+        'pwg_user_id' =>      array('type'=>WS_TYPE_ID),
         'anonymous_id' => array('default'=>null),
         'image_id' =>     array('flags'=>WS_PARAM_OPTIONAL, 'type'=>WS_TYPE_ID),
         ),
@@ -854,7 +854,7 @@ function ws_addDefaultMethods( $arr )
       'ws_groups_addUser',
       array(
         'group_id' => array('type'=>WS_TYPE_ID),
-        'user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
+        'pwg_user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
                             'type'=>WS_TYPE_ID),
         'pwg_token' => array(),
         ),
@@ -868,7 +868,7 @@ function ws_addDefaultMethods( $arr )
       'ws_groups_deleteUser',
       array(
         'group_id' => array('type'=>WS_TYPE_ID),
-        'user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
+        'pwg_user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
                             'type'=>WS_TYPE_ID),
         'pwg_token' => array(),
         ),
@@ -881,7 +881,7 @@ function ws_addDefaultMethods( $arr )
       'pwg.users.getList',
       'ws_users_getList',
       array(
-        'user_id' =>    array('flags'=>WS_PARAM_OPTIONAL|WS_PARAM_FORCE_ARRAY,
+        'pwg_user_id' =>    array('flags'=>WS_PARAM_OPTIONAL|WS_PARAM_FORCE_ARRAY,
                               'type'=>WS_TYPE_ID),
         'username' =>   array('flags'=>WS_PARAM_OPTIONAL,
                               'info'=>'Use "%" as wildcard.'),
@@ -934,7 +934,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
       'pwg.users.delete',
       'ws_users_delete',
       array(
-        'user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
+        'pwg_user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY,
                             'type'=>WS_TYPE_ID),
         'pwg_token' =>  array(),
         ),
@@ -947,7 +947,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
       'pwg.users.setInfo',
       'ws_users_setInfo',
       array(
-        'user_id' =>          array('flags'=>WS_PARAM_FORCE_ARRAY,
+        'pwg_user_id' =>          array('flags'=>WS_PARAM_FORCE_ARRAY,
                                     'type'=>WS_TYPE_ID),
         'username' =>         array('flags'=>WS_PARAM_OPTIONAL),
         'password' =>         array('flags'=>WS_PARAM_OPTIONAL),
@@ -976,7 +976,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
         'pwg_token' => array(),
         ),
       'Updates a user. Leave a field blank to keep the current value.
-<br>"username", "password" and "email" are ignored if "user_id" is an array.
+<br>"username", "password" and "email" are ignored if "pwg_user_id" is an array.
 <br>set "group_id" to -1 if you want to dissociate users from all groups',
       $ws_functions_root . 'pwg.users.php',
       array('admin_only'=>true, 'post_only'=>true)
@@ -990,7 +990,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                               'type'=>WS_TYPE_ID),
         'group_id' =>   array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                               'type'=>WS_TYPE_ID),
-        'user_id' =>    array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
+        'pwg_user_id' =>    array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                               'type'=>WS_TYPE_ID),
         ),
       'Returns permissions: user ids and group ids having access to each album ; this list can be filtered.
@@ -1007,7 +1007,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                               'type'=>WS_TYPE_ID),
         'group_id' =>   array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                               'type'=>WS_TYPE_ID),
-        'user_id' =>    array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
+        'pwg_user_id' =>    array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                               'type'=>WS_TYPE_ID),
         'recursive' =>  array('default'=>false,
                               'type'=>WS_TYPE_BOOL),
@@ -1026,7 +1026,7 @@ enabled_high, registration_date, registration_date_string, registration_date_sin
                             'type'=>WS_TYPE_ID),
         'group_id' => array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                             'type'=>WS_TYPE_ID),
-        'user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
+        'pwg_user_id' =>  array('flags'=>WS_PARAM_FORCE_ARRAY|WS_PARAM_OPTIONAL,
                             'type'=>WS_TYPE_ID),
         'pwg_token' => array(),
         ),

@@ -136,7 +136,7 @@ $(document).ready( function(){
 		var data=uidFromCell(cell);
 		
 		(new PwgWS('{$ROOT_URL|@escape:javascript}')).callService(
-			'pwg.rates.delete', { user_id:data.uid, anonymous_id:data.aid},
+			'pwg.rates.delete', { pwg_user_id:data.uid, anonymous_id:data.aid},
 			{
 				method: 'POST',
 				onFailure: function(num, text) { tr.stop(); tr.fadeTo(0,1); alert(num + " " + text); },

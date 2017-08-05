@@ -387,7 +387,7 @@ else
     {
       $query = '
 DELETE FROM '.FAVORITES_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
       pwg_query($query);
       redirect(make_index_url( array('section'=>'favorites') ));
@@ -398,7 +398,7 @@ DELETE FROM '.FAVORITES_TABLE.'
 SELECT image_id
   FROM '.FAVORITES_TABLE.'
     INNER JOIN '.IMAGES_TABLE.' ON image_id = id
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 '.get_sql_condition_FandF(
       array(
         'visible_images' => 'id'

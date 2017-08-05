@@ -220,7 +220,7 @@ function ws_caddie_add($params, &$service)
 SELECT id
   FROM '. IMAGES_TABLE .'
       LEFT JOIN '. CADDIE_TABLE .'
-      ON id=element_id AND user_id='. $user['id'] .'
+      ON id=element_id AND pwg_user_id='. $user['id'] .'
   WHERE id IN ('. implode(',',$params['image_id']) .')
     AND element_id IS NULL
 ;';
@@ -231,14 +231,14 @@ SELECT id
   {
     $datas[] = array(
       'element_id' => $id,
-      'user_id' => $user['id'],
+      'pwg_user_id' => $user['id'],
       );
   }
   if (count($datas))
   {
     mass_inserts(
       CADDIE_TABLE,
-      array('element_id','user_id'),
+      array('element_id','pwg_user_id'),
       $datas
       );
   }
@@ -249,14 +249,14 @@ SELECT id
  * API method
  * Deletes rates of an user
  * @param mixed[] $params
- *    @option int user_id
+ *    @option int pwg_user_id
  *    @option string anonymous_id (optional)
  */
 function ws_rates_delete($params, &$service)
 {
   $query = '
 DELETE FROM '. RATE_TABLE .'
-  WHERE user_id='. $params['user_id'];
+  WHERE pwg_user_id='. $params['pwg_user_id'];
 
   if (!empty($params['anonymous_id']))
   {

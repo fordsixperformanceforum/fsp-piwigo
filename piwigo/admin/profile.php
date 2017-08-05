@@ -23,7 +23,7 @@
 
 if( !defined("PHPWG_ROOT_PATH") ) die ("Hacking attempt!");
 
-$edit_user = build_user( $_GET['user_id'], false );
+$edit_user = build_user( $_GET['pwg_user_id'], false );
 
 if (!empty($_POST))
 {
@@ -36,7 +36,7 @@ $errors = array();
 save_profile_from_post($edit_user, $errors);
 
 load_profile_in_template(
-  get_root_url().'admin.php?page=profile&amp;user_id='.$edit_user['id'],
+  get_root_url().'admin.php?page=profile&amp;pwg_user_id='.$edit_user['id'],
   get_root_url().'admin.php?page=user_list',
   $edit_user
   );

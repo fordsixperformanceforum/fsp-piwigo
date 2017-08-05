@@ -424,7 +424,7 @@ function pwg_log($image_id = null, $image_type = null, $format_id = null)
 UPDATE '.USER_INFOS_TABLE.'
   SET last_visit = NOW(),
       lastmodified = lastmodified
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ';
     pwg_query($query);
   }
@@ -468,7 +468,7 @@ INSERT INTO '.HISTORY_TABLE.'
   (
     date,
     time,
-    user_id,
+    pwg_user_id,
     IP,
     section,
     category_id,
@@ -1042,7 +1042,7 @@ function fill_caddie($elements_id)
   $query = '
 SELECT element_id
   FROM '.CADDIE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
   $in_caddie = query2array($query, null, 'element_id');
 
@@ -1054,13 +1054,13 @@ SELECT element_id
   {
     $datas[] = array(
       'element_id' => $caddiable,
-      'user_id' => $user['id'],
+      'pwg_user_id' => $user['id'],
       );
   }
 
   if (count($caddiables) > 0)
   {
-    mass_inserts(CADDIE_TABLE, array('element_id','user_id'), $datas);
+    mass_inserts(CADDIE_TABLE, array('element_id','pwg_user_id'), $datas);
   }
 }
 
@@ -2144,7 +2144,7 @@ SELECT COUNT(DISTINCT(com.id))
 
     single_update(USER_CACHE_TABLE,
       array('nb_available_comments'=>$user['nb_available_comments']),
-      array('user_id'=>$user['id'])
+      array('pwg_user_id'=>$user['id'])
       );
   }
   return $user['nb_available_comments'];

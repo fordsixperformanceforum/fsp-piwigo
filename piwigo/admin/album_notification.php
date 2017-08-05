@@ -118,14 +118,14 @@ SELECT id, file, path, representative_ext
 
     $query = '
 SELECT
-    ui.user_id,
+    ui.pwg_user_id,
     ui.status,
     ui.language,
     u.'.$conf['user_fields']['email'].' AS email,
     u.'.$conf['user_fields']['username'].' AS username
   FROM '.USER_INFOS_TABLE.' AS ui
-    JOIN '.USERS_TABLE.' AS u ON u.'.$conf['user_fields']['id'].' = ui.user_id
-  WHERE ui.user_id IN ('.implode(',', $_POST['users']).')
+    JOIN '.USERS_TABLE.' AS u ON u.'.$conf['user_fields']['id'].' = ui.pwg_user_id
+  WHERE ui.pwg_user_id IN ('.implode(',', $_POST['users']).')
 ;';
     $users = query2array($query);
     $usernames = array();
@@ -134,7 +134,7 @@ SELECT
     {
       $usernames[] = $u['username'];
       
-      $authkey = create_user_auth_key($u['user_id'], $u['status']);
+      $authkey = create_user_auth_key($u['pwg_user_id'], $u['status']);
       
       $user_tpl = $tpl;
 
@@ -277,52 +277,52 @@ SELECT
 // private photos)
 $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status != \'guest\'
 ;';
-$all_user_ids = query2array($query, null, 'user_id');
+$all_pwg_user_ids = query2array($query, null, 'pwg_user_id');
 
 if ('private' == $category['status'])
 {
-  $user_ids_access_indirect = array();
+  $pwg_user_ids_access_indirect = array();
   
   if (isset($group_ids) and count($group_ids) > 0)
   {
     $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_GROUP_TABLE.'
   WHERE group_id IN ('.implode(',', $group_ids).') 
 ';
-    $user_ids_access_indirect = query2array($query, null, 'user_id');
+    $pwg_user_ids_access_indirect = query2array($query, null, 'pwg_user_id');
   }
 
   $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_ACCESS_TABLE.'
   WHERE cat_id = '.$category['id'].'
 ;';
-  $user_ids_access_direct = query2array($query, null, 'user_id');
+  $pwg_user_ids_access_direct = query2array($query, null, 'pwg_user_id');
 
-  $user_ids_access = array_unique(array_merge($user_ids_access_direct, $user_ids_access_indirect));
+  $pwg_user_ids_access = array_unique(array_merge($pwg_user_ids_access_direct, $pwg_user_ids_access_indirect));
 
-  $user_ids = array_intersect($user_ids_access, $all_user_ids);
+  $pwg_user_ids = array_intersect($pwg_user_ids_access, $all_pwg_user_ids);
 }
 else
 {
-  $user_ids = $all_user_ids;
+  $pwg_user_ids = $all_pwg_user_ids;
 }
 
-if (count($user_ids) > 0)
+if (count($pwg_user_ids) > 0)
 {
   $query = '
 SELECT
     '.$conf['user_fields']['id'].' AS id,
     '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
-  WHERE id IN ('.implode(',', $user_ids).')
+  WHERE id IN ('.implode(',', $pwg_user_ids).')
 ;';
 
   $users = query2array($query, 'id', 'username');

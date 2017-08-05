@@ -105,12 +105,12 @@ ALTER TABLE phpwebgallery_comments
 
   "
 ALTER TABLE phpwebgallery_favorites
-  DROP INDEX user_id
+  DROP INDEX pwg_user_id
 ;",
 
   "
 ALTER TABLE phpwebgallery_favorites
-  ADD PRIMARY KEY (user_id,image_id)
+  ADD PRIMARY KEY (pwg_user_id,image_id)
 ;",
 
   "
@@ -275,19 +275,19 @@ ALTER TABLE phpwebgallery_users
 
   "
 CREATE TABLE phpwebgallery_rate (
-  user_id smallint(5) unsigned NOT NULL default '0',
+  pwg_user_id smallint(5) unsigned NOT NULL default '0',
   element_id mediumint(8) unsigned NOT NULL default '0',
   rate tinyint(2) unsigned NOT NULL default '0',
-  PRIMARY KEY  (user_id,element_id)
+  PRIMARY KEY  (pwg_user_id,element_id)
 ) ENGINE=MyISAM
 ;",
 
   "
 CREATE TABLE phpwebgallery_user_forbidden (
-  user_id smallint(5) unsigned NOT NULL default '0',
+  pwg_user_id smallint(5) unsigned NOT NULL default '0',
   need_update enum('true','false') NOT NULL default 'true',
   forbidden_categories text,
-  PRIMARY KEY  (user_id)
+  PRIMARY KEY  (pwg_user_id)
 ) ENGINE=MyISAM
 ;",
 

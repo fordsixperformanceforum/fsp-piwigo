@@ -42,7 +42,7 @@ SELECT
   FROM '.CATEGORIES_TABLE.' c
     INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.' ucc
     ON id = cat_id
-    AND user_id = '.$user['id'];
+    AND pwg_user_id = '.$user['id'];
 
 if ('recent_cats' == $page['section'])
 {
@@ -94,7 +94,7 @@ while ($row = pwg_db_fetch_assoc($result))
     $query = '
 SELECT representative_picture_id
   FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.'
-  ON id = cat_id and user_id = '.$user['id'].'
+  ON id = cat_id and pwg_user_id = '.$user['id'].'
   WHERE uppercats LIKE \''.$row['uppercats'].',%\'
     AND representative_picture_id IS NOT NULL'
   .get_sql_condition_FandF
@@ -243,7 +243,7 @@ if (count($user_representative_updates_for))
   {
     $updates[] =
       array(
-        'user_id' => $user['id'],
+        'pwg_user_id' => $user['id'],
         'cat_id' => $cat_id,
         'user_representative_picture_id' => $image_id,
         );
@@ -252,7 +252,7 @@ if (count($user_representative_updates_for))
   mass_updates(
     USER_CACHE_CATEGORIES_TABLE,
     array(
-      'primary' => array('user_id', 'cat_id'),
+      'primary' => array('pwg_user_id', 'cat_id'),
       'update'  => array('user_representative_picture_id')
       ),
     $updates

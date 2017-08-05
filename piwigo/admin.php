@@ -234,7 +234,7 @@ SELECT COUNT(*)
 $query = '
 SELECT COUNT(*)
   FROM '.CADDIE_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
 list($nb_photos_in_caddie) = pwg_db_fetch_row(pwg_query($query));
 

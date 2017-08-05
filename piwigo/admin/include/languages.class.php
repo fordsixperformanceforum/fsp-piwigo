@@ -119,7 +119,7 @@ UPDATE '.USER_INFOS_TABLE.'
         $query = '
 UPDATE '.USER_INFOS_TABLE.'
   SET language = \''.$language_id.'\'
-  WHERE user_id IN ('.$conf['default_user_id'].', '.$conf['guest_id'].')
+  WHERE pwg_user_id IN ('.$conf['default_user_id'].', '.$conf['guest_id'].')
 ;';
         pwg_query($query);
         break;

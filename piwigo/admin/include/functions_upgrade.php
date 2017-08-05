@@ -154,7 +154,7 @@ DELETE
     $query = '
 SELECT theme
   FROM '.PREFIX_TABLE.'user_infos
-  WHERE user_id = '.$conf['default_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_user_id'].'
 ;';
     list($default_theme) = pwg_db_fetch_row(pwg_query($query));
 
@@ -164,7 +164,7 @@ SELECT theme
       $query = '
 UPDATE '.PREFIX_TABLE.'user_infos
   SET theme = \'elegant\'
-  WHERE user_id = '.$conf['default_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_user_id'].'
 ;';
       pwg_query($query);
     }
@@ -191,7 +191,7 @@ function check_upgrade_access_rights()
       $query = '
 SELECT status
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id = '.$_SESSION['pwg_uid'].'
+  WHERE pwg_user_id = '.$_SESSION['pwg_uid'].'
 ;';
       pwg_query($query);
 
@@ -237,7 +237,7 @@ WHERE username = \''.$username.'\'
 SELECT u.password, ui.status
 FROM '.USERS_TABLE.' AS u
 INNER JOIN '.USER_INFOS_TABLE.' AS ui
-ON u.'.$conf['user_fields']['id'].'=ui.user_id
+ON u.'.$conf['user_fields']['id'].'=ui.pwg_user_id
 WHERE '.$conf['user_fields']['username'].'=\''.$username.'\'
 ;';
   }

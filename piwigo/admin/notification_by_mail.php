@@ -133,16 +133,16 @@ where
   // null mail_address are not selected in the list
   $query = '
 select
-  u.'.$conf['user_fields']['id'].' as user_id,
+  u.'.$conf['user_fields']['id'].' as pwg_user_id,
   u.'.$conf['user_fields']['username'].' as username,
   u.'.$conf['user_fields']['email'].' as mail_address
 from
-  '.USERS_TABLE.' as u left join '.USER_MAIL_NOTIFICATION_TABLE.' as m on u.'.$conf['user_fields']['id'].' = m.user_id
+  '.USERS_TABLE.' as u left join '.USER_MAIL_NOTIFICATION_TABLE.' as m on u.'.$conf['user_fields']['id'].' = m.pwg_user_id
 where
   u.'.$conf['user_fields']['email'].' is not null and
-  m.user_id is null
+  m.pwg_user_id is null
 order by
-  user_id;';
+  pwg_user_id;';
 
   $result = pwg_query($query);
 
@@ -161,7 +161,7 @@ order by
 
       // Insert new nbm_users
       $inserts[] = array(
-        'user_id' => $nbm_user['user_id'],
+        'pwg_user_id' => $nbm_user['pwg_user_id'],
         'check_key' => $nbm_user['check_key'],
         'enabled' => 'false' // By default if false, set to true with specific functions
         );
@@ -174,7 +174,7 @@ order by
     }
 
     // Insert new nbm_users
-    mass_inserts(USER_MAIL_NOTIFICATION_TABLE, array('user_id', 'check_key', 'enabled'), $inserts);
+    mass_inserts(USER_MAIL_NOTIFICATION_TABLE, array('pwg_user_id', 'check_key', 'enabled'), $inserts);
     // Update field enabled with specific function
     $check_key_treated = do_subscribe_unsubscribe_notification_by_mail
     (
@@ -292,7 +292,7 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
             $auth = null;
             $add_url_params = array();
             
-            $auth_key = create_user_auth_key($nbm_user['user_id'], $nbm_user['status']);
+            $auth_key = create_user_auth_key($nbm_user['pwg_user_id'], $nbm_user['status']);
             
             if ($auth_key !== false)
             {
@@ -409,7 +409,7 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
                 inc_mail_sent_success($nbm_user);
 
                 $datas[] = array(
-                  'user_id' => $nbm_user['user_id'],
+                  'pwg_user_id' => $nbm_user['pwg_user_id'],
                   'last_send' => $dbnow
                   );
               }
@@ -442,7 +442,7 @@ function do_action_send_mail_notification($action = 'list_to_send', $check_key_l
           mass_updates(
             USER_MAIL_NOTIFICATION_TABLE,
             array(
-              'primary' => array('user_id'),
+              'primary' => array('pwg_user_id'),
               'update' => array('last_send')
              ),
              $datas

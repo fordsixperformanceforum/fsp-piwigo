@@ -36,7 +36,7 @@ ALTER TABLE '.USER_INFOS_TABLE.'
 pwg_query($query);
 
 $query = '
-SELECT user_id, theme
+SELECT pwg_user_id, theme
   FROM '.USER_INFOS_TABLE.'
 ;';
 
@@ -73,7 +73,7 @@ while ($row = pwg_db_fetch_assoc($result))
   }
 
   array_push($users, array(
-    'user_id' => $row['user_id'],
+    'pwg_user_id' => $row['pwg_user_id'],
     'theme' => $user_theme
     )
   );
@@ -82,7 +82,7 @@ while ($row = pwg_db_fetch_assoc($result))
 mass_updates(
   USER_INFOS_TABLE,
   array(
-    'primary' => array('user_id'),
+    'primary' => array('pwg_user_id'),
     'update'  => array('theme')
     ),
   $users

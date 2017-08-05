@@ -57,20 +57,20 @@ function process_password_request()
     return false;
   }
   
-  $user_id = get_userid_by_email($_POST['username_or_email']);
+  $pwg_user_id = get_userid_by_email($_POST['username_or_email']);
     
-  if (!is_numeric($user_id))
+  if (!is_numeric($pwg_user_id))
   {
-    $user_id = get_userid($_POST['username_or_email']);
+    $pwg_user_id = get_userid($_POST['username_or_email']);
   }
 
-  if (!is_numeric($user_id))
+  if (!is_numeric($pwg_user_id))
   {
     $page['errors'][] = l10n('Invalid username or email');
     return false;
   }
 
-  $userdata = getuserdata($user_id, false);
+  $userdata = getuserdata($pwg_user_id, false);
 
   // password request is not possible for guest/generic users
   $status = $userdata['status'];
@@ -99,7 +99,7 @@ function process_password_request()
       'activation_key' => pwg_password_hash($activation_key),
       'activation_key_expire' => $expire,
       ),
-    array('user_id' => $user_id)
+    array('pwg_user_id' => $pwg_user_id)
     );
   
   $userdata['activation_key'] = $activation_key;
@@ -144,7 +144,7 @@ function process_password_request()
  *  checks the activation key: does it match the expected pattern? is it
  *  linked to a user? is this user allowed to reset his password?
  *
- * @return mixed (user_id if OK, false otherwise)
+ * @return mixed (pwg_user_id if OK, false otherwise)
  */
 function check_password_reset_key($reset_key)
 {
@@ -158,7 +158,7 @@ function check_password_reset_key($reset_key)
     return false;
   }
 
-  $user_ids = array();
+  $pwg_user_ids = array();
   
   $query = '
 SELECT
@@ -166,25 +166,25 @@ SELECT
   FROM '.USERS_TABLE.'
   WHERE '.$conf['user_fields']['email'].' = \''.pwg_db_real_escape_string($email).'\'
 ;';
-  $user_ids = query2array($query, null, 'id');
+  $pwg_user_ids = query2array($query, null, 'id');
 
-  if (count($user_ids) == 0)
+  if (count($pwg_user_ids) == 0)
   {
     $page['errors'][] = l10n('Invalid username or email');
     return false;
   }
 
-  $user_id = null;
+  $pwg_user_id = null;
   
   $query = '
 SELECT
-    user_id,
+    pwg_user_id,
     status,
     activation_key,
     activation_key_expire,
     NOW() AS dbnow
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id IN ('.implode(',', $user_ids).')
+  WHERE pwg_user_id IN ('.implode(',', $pwg_user_ids).')
 ;';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_assoc($result))
@@ -204,17 +204,17 @@ SELECT
         return false;
       }
 
-      $user_id = $row['user_id'];
+      $pwg_user_id = $row['pwg_user_id'];
     }
   }
 
-  if (empty($user_id))
+  if (empty($pwg_user_id))
   {
     $page['errors'][] = l10n('Invalid key');
     return false;
   }
   
-  return $user_id;
+  return $pwg_user_id;
 }
 
 /**
@@ -238,9 +238,9 @@ function reset_password()
     $page['errors'][] = l10n('Invalid key');
   }
   
-  $user_id = check_password_reset_key($_GET['key']);
+  $pwg_user_id = check_password_reset_key($_GET['key']);
   
-  if (!is_numeric($user_id))
+  if (!is_numeric($pwg_user_id))
   {
     return false;
   }
@@ -248,7 +248,7 @@ function reset_password()
   single_update(
     USERS_TABLE,
     array($conf['user_fields']['password'] => $conf['password_hash']($_POST['use_new_pwd'])),
-    array($conf['user_fields']['id'] => $user_id)
+    array($conf['user_fields']['id'] => $pwg_user_id)
     );
 
   single_update(
@@ -257,10 +257,10 @@ function reset_password()
       'activation_key' => null,
       'activation_key_expire' => null,
       ),
-    array('user_id' => $user_id)
+    array('pwg_user_id' => $pwg_user_id)
     );
 
-  deactivate_user_auth_keys($user_id);
+  deactivate_user_auth_keys($pwg_user_id);
 
   $page['infos'][] = l10n('Your password has been reset');
   $page['infos'][] = '<a href="'.get_root_url().'identification.php">'.l10n('Login').'</a>';
@@ -304,10 +304,10 @@ if (isset($_GET['key']) and !is_a_guest())
 
 if (isset($_GET['key']) and !isset($_POST['submit']))
 {
-  $user_id = check_password_reset_key($_GET['key']);
-  if (is_numeric($user_id))
+  $pwg_user_id = check_password_reset_key($_GET['key']);
+  if (is_numeric($pwg_user_id))
   {
-    $userdata = getuserdata($user_id, false);
+    $userdata = getuserdata($pwg_user_id, false);
     $page['username'] = $userdata['username'];
     $template->assign('key', $_GET['key']);
 

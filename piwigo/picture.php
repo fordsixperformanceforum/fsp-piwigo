@@ -276,7 +276,7 @@ if (isset($_GET['action']))
     {
       $query = '
 INSERT INTO '.FAVORITES_TABLE.'
-  (image_id,user_id)
+  (image_id,pwg_user_id)
   VALUES
   ('.$page['image_id'].','.$user['id'].')
 ;';
@@ -290,7 +290,7 @@ INSERT INTO '.FAVORITES_TABLE.'
     {
       $query = '
 DELETE FROM '.FAVORITES_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
     AND image_id = '.$page['image_id'].'
 ;';
       pwg_query($query);
@@ -837,7 +837,7 @@ if (!is_a_guest() and $conf['picture_favorite_icon'])
 SELECT COUNT(*) AS nb_fav
   FROM '.FAVORITES_TABLE.'
   WHERE image_id = '.$page['image_id'].'
-    AND user_id = '.$user['id'].'
+    AND pwg_user_id = '.$user['id'].'
 ;';
   $row = pwg_db_fetch_assoc( pwg_query($query) );
 	$is_favorite = $row['nb_fav'] != 0;

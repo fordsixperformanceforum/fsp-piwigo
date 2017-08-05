@@ -46,7 +46,7 @@ ALTER TABLE phpwebgallery_categories
 
   "
 CREATE TABLE phpwebgallery_user_category (
-  user_id smallint(5) unsigned NOT NULL default '0'
+  pwg_user_id smallint(5) unsigned NOT NULL default '0'
 )
 ;",
 

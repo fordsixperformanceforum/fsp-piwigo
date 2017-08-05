@@ -67,7 +67,7 @@ CREATE TABLE `".PREFIX_TABLE."history` (
   `month` tinyint(2) NOT NULL default '0',
   `day` tinyint(2) NOT NULL default '0',
   `hour` tinyint(2) NOT NULL default '0',
-  `user_id` smallint(5) NOT NULL default '0',
+  `pwg_user_id` smallint(5) NOT NULL default '0',
   `IP` varchar(15) NOT NULL default '',
   `section` enum('categories','tags','search','list','favorites','most_visited','best_rated','recent_pics','recent_cats') default NULL,
   `category_id` smallint(5) default NULL,
@@ -160,12 +160,12 @@ CREATE TABLE `".PREFIX_TABLE."plugins` (
 
 "
 CREATE TABLE `".PREFIX_TABLE."user_cache_categories` (
-  `user_id` smallint(5) NOT NULL default '0',
+  `pwg_user_id` smallint(5) NOT NULL default '0',
   `cat_id` smallint(5) unsigned NOT NULL default '0',
   `max_date_last` datetime default NULL,
   `count_images` mediumint(8) unsigned default '0',
   `count_categories` mediumint(8) unsigned default '0',
-  PRIMARY KEY  (`user_id`,`cat_id`)
+  PRIMARY KEY  (`pwg_user_id`,`cat_id`)
 ) ENGINE=MyISAM
 ;",
 
@@ -320,7 +320,7 @@ SET
     ).
   "'
 WHERE
-  user_id = ".$conf['default_user_id'].";";
+  pwg_user_id = ".$conf['default_user_id'].";";
 pwg_query($query);
 
 $query = "

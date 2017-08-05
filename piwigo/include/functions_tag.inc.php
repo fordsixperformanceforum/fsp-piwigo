@@ -39,7 +39,7 @@ function get_nb_available_tags()
     $user['nb_available_tags'] = count(get_available_tags());
     single_update(USER_CACHE_TABLE, 
       array('nb_available_tags'=>$user['nb_available_tags']),
-      array('user_id'=>$user['id'])
+      array('pwg_user_id'=>$user['id'])
       );
   }
   return $user['nb_available_tags'];

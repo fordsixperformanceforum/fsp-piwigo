@@ -95,7 +95,7 @@ ALTER TABLE piwigo_comments
 
   "
 ALTER TABLE piwigo_favorites
-  CHANGE COLUMN user_id user_id smallint(5) NOT NULL default '0'
+  CHANGE COLUMN pwg_user_id pwg_user_id smallint(5) NOT NULL default '0'
 ;",
 
   "
@@ -106,17 +106,17 @@ ALTER TABLE piwigo_images
 
   "
 ALTER TABLE piwigo_rate
-  CHANGE COLUMN user_id user_id smallint(5) NOT NULL default '0'
+  CHANGE COLUMN pwg_user_id pwg_user_id smallint(5) NOT NULL default '0'
 ;",
 
   "
 ALTER TABLE piwigo_sessions
-  CHANGE COLUMN user_id user_id smallint(5) NOT NULL default '0'
+  CHANGE COLUMN pwg_user_id pwg_user_id smallint(5) NOT NULL default '0'
 ;",
 
   "
 ALTER TABLE piwigo_user_access
-  CHANGE COLUMN user_id user_id smallint(5) NOT NULL default '0'
+  CHANGE COLUMN pwg_user_id pwg_user_id smallint(5) NOT NULL default '0'
 ;",
 
   "
@@ -125,7 +125,7 @@ DROP TABLE piwigo_user_forbidden
 
   "
 ALTER TABLE piwigo_user_group
- CHANGE COLUMN user_id user_id smallint(5) NOT NULL default '0'
+ CHANGE COLUMN pwg_user_id pwg_user_id smallint(5) NOT NULL default '0'
 ;",
 
   "
@@ -135,25 +135,25 @@ ALTER TABLE piwigo_users
 
   "
 CREATE TABLE piwigo_caddie (
-  user_id smallint(5) NOT NULL default '0',
+  pwg_user_id smallint(5) NOT NULL default '0',
   element_id mediumint(8) NOT NULL default '0',
-  PRIMARY KEY  (user_id,element_id)
+  PRIMARY KEY  (pwg_user_id,element_id)
 ) ENGINE=MyISAM
 ;",
 
   "
 CREATE TABLE piwigo_user_cache (
-  user_id smallint(5) NOT NULL default '0',
+  pwg_user_id smallint(5) NOT NULL default '0',
   need_update enum('true','false') NOT NULL default 'true',
   forbidden_categories text,
-  PRIMARY KEY  (user_id)
+  PRIMARY KEY  (pwg_user_id)
 ) ENGINE=MyISAM
 ;",
 
   "
 CREATE TABLE piwigo_user_feed (
   id varchar(50) binary NOT NULL default '',
-  user_id smallint(5) NOT NULL default '0',
+  pwg_user_id smallint(5) NOT NULL default '0',
   last_check datetime default NULL,
   PRIMARY KEY  (id)
 ) ENGINE=MyISAM
@@ -161,7 +161,7 @@ CREATE TABLE piwigo_user_feed (
 
   "
 CREATE TABLE piwigo_user_infos (
-  user_id smallint(5) NOT NULL default '0',
+  pwg_user_id smallint(5) NOT NULL default '0',
   nb_image_line tinyint(1) unsigned NOT NULL default '5',
   nb_line_page tinyint(3) unsigned NOT NULL default '3',
   status enum('admin','guest') NOT NULL default 'guest',
@@ -173,7 +173,7 @@ CREATE TABLE piwigo_user_infos (
   recent_period tinyint(3) unsigned NOT NULL default '7',
   template varchar(255) NOT NULL default 'yoga',
   registration_date datetime NOT NULL default '0000-00-00 00:00:00',
-  UNIQUE KEY user_infos_ui1 (user_id)
+  UNIQUE KEY user_infos_ui1 (pwg_user_id)
 ) ENGINE=MyISAM
 ;"
   );
@@ -196,7 +196,7 @@ list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
 $result = pwg_query($query);
 while ($row = pwg_db_fetch_assoc($result))
 {
-  $row['user_id'] = $row['id'];
+  $row['pwg_user_id'] = $row['id'];
   $row['registration_date'] = $dbnow;
   array_push($datas, $row);
 }
@@ -205,7 +205,7 @@ include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
 mass_inserts(
   USER_INFOS_TABLE,
   array(
-    'user_id',
+    'pwg_user_id',
     'nb_image_line',
     'nb_line_page',
     'status',

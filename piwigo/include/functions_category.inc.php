@@ -81,7 +81,7 @@ SELECT ';
   // $user['forbidden_categories'] including with USER_CACHE_CATEGORIES_TABLE
   $query.= '
 FROM '.CATEGORIES_TABLE.' INNER JOIN '.USER_CACHE_CATEGORIES_TABLE.'
-  ON id = cat_id and user_id = '.$user['id'];
+  ON id = cat_id and pwg_user_id = '.$user['id'];
 
   // Always expand when filter is activated
   if (!$user['expand'] and !$filter['enabled'])
@@ -521,7 +521,7 @@ FROM '.CATEGORIES_TABLE.' as c
   $cats = array();
   while ($row = pwg_db_fetch_assoc($result))
   {
-    $row['user_id'] = $userdata['id'];
+    $row['pwg_user_id'] = $userdata['id'];
     $row['nb_categories'] = 0;
     $row['count_categories'] = 0;
     $row['count_images'] = (int)$row['nb_images'];

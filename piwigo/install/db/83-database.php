@@ -37,7 +37,7 @@ SET c.author_id = u.'.$conf['user_fields']['id'].'
 WHERE
     c.author_id is null
 AND c.author = u.'.$conf['user_fields']['username'].' 
-AND u.'.$conf['user_fields']['id'].' = i.user_id
+AND u.'.$conf['user_fields']['id'].' = i.pwg_user_id
 AND i.registration_date <= c.date
 ;';
 

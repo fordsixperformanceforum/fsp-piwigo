@@ -197,7 +197,7 @@ jQuery(document).ready(function() {
       url: "ws.php?format=json&method=pwg.users.getList",
       type:"POST",
       data: {
-        user_id: userId,
+        pwg_user_id: userId,
         display: "all",
       },
       success:function(data) {
@@ -369,7 +369,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
 
   /* change password */
   jQuery(document).on('click', '.changePasswordOpen',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery(this).hide();
     jQuery('#user'+userId+' .changePasswordDone').hide();
@@ -380,7 +380,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   });
 
   jQuery(document).on('click', '.changePassword a.updatePassword',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery('#user'+userId+' .changePassword a .text').hide();
     jQuery('#user'+userId+' .changePassword a img').show();
@@ -390,7 +390,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
       type:"POST",
       data: {
         pwg_token:pwg_token,
-        user_id:userId,
+        pwg_user_id:userId,
         password: jQuery('#user'+userId+' .changePassword input[type=text]').val()
       },
       beforeSend: function() {
@@ -411,7 +411,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   });
 
   jQuery(document).on('click', '.changePassword a.cancel',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery('#user'+userId+' .changePassword').hide();
     jQuery('#user'+userId+' .changePasswordOpen').show();
@@ -421,7 +421,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
 
   /* change username */
   jQuery(document).on('click', '.changeUsernameOpen a',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
     var username = jQuery('#user'+userId+' .username').html();
 
     jQuery('#user'+userId+' .changeUsernameOpen').hide();
@@ -432,7 +432,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   });
 
   jQuery(document).on('click', 'a.updateUsername',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery('#user'+userId+' .changeUsername a .text').hide();
     jQuery('#user'+userId+' .changeUsername a img').show();
@@ -442,7 +442,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
       type:"POST",
       data: {
         pwg_token:pwg_token,
-        user_id:userId,
+        pwg_user_id:userId,
         username: jQuery('#user'+userId+' .changeUsername input[type=text]').val()
       },
       success:function(data) {
@@ -462,7 +462,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   });
 
   jQuery(document).on('click', '.changeUsername a.cancel',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery('#user'+userId+' .changeUsername').hide();
     jQuery('#user'+userId+' .changeUsernameOpen').show();
@@ -472,7 +472,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
 
   /* display the "save" button when a field changes */
   jQuery(document).on('change', '.userProperties input, .userProperties select',  function() {
-    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=user_id]').val();
+    var userId = jQuery(this).parentsUntil('form').parent().find('input[name=pwg_user_id]').val();
 
     jQuery('#user'+userId+' input[type=submit]').show();
     jQuery('#user'+userId+' .propertiesUpdateDone').hide();
@@ -484,14 +484,14 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
       return false;
     }
 
-    var userId = jQuery(this).data('user_id');
+    var userId = jQuery(this).data('pwg_user_id');
     var username = jQuery('#user'+userId+' .username').html();
 
     jQuery.ajax({
       url: "ws.php?format=json&method=pwg.users.delete",
       type:"POST",
       data: {
-        user_id:userId,
+        pwg_user_id:userId,
         pwg_token:pwg_token
       },
       beforeSend: function() {
@@ -510,7 +510,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   });
 
   jQuery(document).on('click', '.userProperties input[type=submit]',  function() {
-    var userId = jQuery(this).data('user_id');
+    var userId = jQuery(this).data('pwg_user_id');
 
     var formData = jQuery('#user'+userId+' form').serialize();
     formData += '&pwg_token='+pwg_token;
@@ -599,7 +599,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
     },
     {
       render: function(data, type, full) {
-        return '<label><input type="checkbox" data-user_id="'+full[0]+'"> '+data+'</label> <a title="{/literal}{'Open user details'|translate|escape:'javascript'}{literal}" class="icon-pencil openUserDetails">{/literal}{'edit'|translate}{literal}</a>';
+        return '<label><input type="checkbox" data-pwg_user_id="'+full[0]+'"> '+data+'</label> <a title="{/literal}{'Open user details'|translate|escape:'javascript'}{literal}" class="icon-pencil openUserDetails">{/literal}{'edit'|translate}{literal}</a>';
       }
     }
   ];
@@ -635,8 +635,8 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
     },
     "drawCallback": function( oSettings ) {
       jQuery("#userList input[type=checkbox]").each(function() {
-        var user_id = jQuery(this).data("user_id");
-        jQuery(this).prop('checked', (selection.indexOf(user_id) != -1));
+        var pwg_user_id = jQuery(this).data("pwg_user_id");
+        jQuery(this).prop('checked', (selection.indexOf(pwg_user_id) != -1));
       });
     },
     columns: aoColumns
@@ -691,12 +691,12 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
   }
 
   jQuery(document).on('change', '#userList input[type=checkbox]',  function() {
-    var user_id = jQuery(this).data("user_id");
+    var pwg_user_id = jQuery(this).data("pwg_user_id");
 
-    array_delete(selection, user_id);
+    array_delete(selection, pwg_user_id);
 
     if (jQuery(this).is(":checked")) {
-      selection.push(user_id);
+      selection.push(pwg_user_id);
     }
 
     checkSelection();
@@ -727,8 +727,8 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
     selection = newSelection;
 
     jQuery("#userList input[type=checkbox]").each(function() {
-      var user_id = jQuery(this).data("user_id");
-      jQuery(this).prop('checked', (selection.indexOf(user_id) != -1));
+      var pwg_user_id = jQuery(this).data("pwg_user_id");
+      jQuery(this).prop('checked', (selection.indexOf(pwg_user_id) != -1));
     });
 
     checkSelection();
@@ -764,7 +764,7 @@ jQuery(document).on('click', '.close-user-details',  function(e) {
     var method = 'pwg.users.setInfo';
     var data = {
       pwg_token: pwg_token,
-      user_id: selection
+      pwg_user_id: selection
     };
 
     switch (action) {
@@ -1091,10 +1091,10 @@ span.infos, span.errors {background-image:none; padding:2px 5px; margin:0;border
     <br>
 <% } %>
 
-    <a target="_blank" href="admin.php?page=user_perm&amp;user_id=<%- user.id %>" class="icon-lock">{'Permissions'|translate}</a>
+    <a target="_blank" href="admin.php?page=user_perm&amp;pwg_user_id=<%- user.id %>" class="icon-lock">{'Permissions'|translate}</a>
 
 <% if (!user.isProtected) { %>
-    <br><span class="userDelete"><img class="loading" src="themes/default/images/ajax-loader-small.gif" style="display:none;"><a href="#" class="icon-trash" data-user_id="<%- user.id %>">{'Delete'|translate}</a></span>
+    <br><span class="userDelete"><img class="loading" src="themes/default/images/ajax-loader-small.gif" style="display:none;"><a href="#" class="icon-trash" data-pwg_user_id="<%- user.id %>">{'Delete'|translate}</a></span>
 <% } %>
 
   </div>
@@ -1112,7 +1112,7 @@ span.infos, span.errors {background-image:none; padding:2px 5px; margin:0;border
   <div class="userStats"><%- user.registeredOn_string %><br><%- user.lastVisit_string %></div>
 
   <div class="userPropertiesContainer">
-    <input type="hidden" name="user_id" value="<%- user.id %>">
+    <input type="hidden" name="pwg_user_id" value="<%- user.id %>">
     <div class="userPropertiesSet">
       <div class="userPropertiesSetTitle">{'Properties'|translate}</div>
 
@@ -1195,7 +1195,7 @@ span.infos, span.errors {background-image:none; padding:2px 5px; margin:0;border
     <div style="clear:both"></div>
   </div> {* userPropertiesContainer *}
 
-  <input type="submit" value="{'Update user'|translate|escape:html}" data-user_id="<%- user.id %>">
+  <input type="submit" value="{'Update user'|translate|escape:html}" data-pwg_user_id="<%- user.id %>">
   <img class="submitWait" src="themes/default/images/ajax-loader-small.gif" style="display:none">
   <a href="#close" class="icon-cancel-circled close-user-details" title="{'Close user details'|translate}">{'close'|translate}</a>
   <span class="propertiesUpdateDone" style="display:none">

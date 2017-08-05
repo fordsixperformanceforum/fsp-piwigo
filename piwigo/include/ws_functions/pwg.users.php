@@ -25,7 +25,7 @@
  * API method
  * Returns a list of users
  * @param mixed[] $params
- *    @option int[] user_id (optional)
+ *    @option int[] pwg_user_id (optional)
  *    @option string username (optional)
  *    @option string[] status (optional)
  *    @option int min_level (optional)
@@ -41,9 +41,9 @@ function ws_users_getList($params, &$service)
 
   $where_clauses = array('1=1');
 
-  if (!empty($params['user_id']))
+  if (!empty($params['pwg_user_id']))
   {
-    $where_clauses[] = 'u.'.$conf['user_fields']['id'].' IN('. implode(',', $params['user_id']) .')';
+    $where_clauses[] = 'u.'.$conf['user_fields']['id'].' IN('. implode(',', $params['pwg_user_id']) .')';
   }
 
   if (!empty($params['username']))
@@ -159,9 +159,9 @@ SELECT DISTINCT ';
   $query.= '
   FROM '. USERS_TABLE .' AS u
     INNER JOIN '. USER_INFOS_TABLE .' AS ui
-      ON u.'. $conf['user_fields']['id'] .' = ui.user_id
+      ON u.'. $conf['user_fields']['id'] .' = ui.pwg_user_id
     LEFT JOIN '. USER_GROUP_TABLE .' AS ug
-      ON u.'. $conf['user_fields']['id'] .' = ug.user_id
+      ON u.'. $conf['user_fields']['id'] .' = ug.pwg_user_id
   WHERE
     '. implode(' AND ', $where_clauses) .'
   ORDER BY '. $params['order'] .'
@@ -186,15 +186,15 @@ SELECT DISTINCT ';
     if (isset($params['display']['groups']))
     {
       $query = '
-SELECT user_id, group_id
+SELECT pwg_user_id, group_id
   FROM '. USER_GROUP_TABLE .'
-  WHERE user_id IN ('. implode(',', array_keys($users)) .')
+  WHERE pwg_user_id IN ('. implode(',', array_keys($users)) .')
 ;';
       $result = pwg_query($query);
       
       while ($row = pwg_db_fetch_assoc($result))
       {
-        $users[ $row['user_id'] ]['groups'][] = intval($row['group_id']);
+        $users[ $row['pwg_user_id'] ]['groups'][] = intval($row['group_id']);
       }
     }
     
@@ -279,7 +279,7 @@ function ws_users_add($params, &$service)
     }
   }
 
-  $user_id = register_user(
+  $pwg_user_id = register_user(
     $params['username'],
     $params['password'],
     $params['email'],
@@ -288,19 +288,19 @@ function ws_users_add($params, &$service)
     $params['send_password_by_mail']
     );
 
-  if (!$user_id)
+  if (!$pwg_user_id)
   {
     return new PwgError(WS_ERR_INVALID_PARAM, $errors[0]);
   }
 
-  return $service->invoke('pwg.users.getList', array('user_id'=>$user_id));
+  return $service->invoke('pwg.users.getList', array('pwg_user_id'=>$pwg_user_id));
 }
 
 /**
  * API method
  * Deletes users
  * @param mixed[] $params
- *    @option int[] user_id
+ *    @option int[] pwg_user_id
  *    @option string pwg_token
  */
 function ws_users_delete($params, &$service)
@@ -326,21 +326,21 @@ function ws_users_delete($params, &$service)
   {
     $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-    $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
+    $protected_users = array_merge($protected_users, query2array($query, null, 'pwg_user_id'));
   }
   
   // protect some users
-  $params['user_id'] = array_diff($params['user_id'], $protected_users);
+  $params['pwg_user_id'] = array_diff($params['pwg_user_id'], $protected_users);
 
   $counter = 0;
   
-  foreach ($params['user_id'] as $user_id)
+  foreach ($params['pwg_user_id'] as $pwg_user_id)
   {
-    delete_user($user_id);
+    delete_user($pwg_user_id);
     $counter++;
   }
 
@@ -354,7 +354,7 @@ SELECT
  * API method
  * Updates users
  * @param mixed[] $params
- *    @option int[] user_id
+ *    @option int[] pwg_user_id
  *    @option string username (optional)
  *    @option string password (optional)
  *    @option string email (optional)
@@ -383,17 +383,17 @@ function ws_users_setInfo($params, &$service)
   $updates = $updates_infos = array();
   $update_status = null;
 
-  if (count($params['user_id']) == 1)
+  if (count($params['pwg_user_id']) == 1)
   {
-    if (get_username($params['user_id'][0]) === false)
+    if (get_username($params['pwg_user_id'][0]) === false)
     {
       return new PwgError(WS_ERR_INVALID_PARAM, 'This user does not exist.');
     }
 
     if (!empty($params['username']))
     {
-      $user_id = get_userid($params['username']);
-      if ($user_id and $user_id != $params['user_id'][0])
+      $pwg_user_id = get_userid($params['username']);
+      if ($pwg_user_id and $pwg_user_id != $params['pwg_user_id'][0])
       {
         return new PwgError(WS_ERR_INVALID_PARAM, l10n('this login is already used'));
       }
@@ -406,7 +406,7 @@ function ws_users_setInfo($params, &$service)
 
     if (!empty($params['email']))
     {
-      if ( ($error = validate_mail_address($params['user_id'][0], $params['email'])) != '')
+      if ( ($error = validate_mail_address($params['pwg_user_id'][0], $params['email'])) != '')
       {
         return new PwgError(WS_ERR_INVALID_PARAM, $error);
       }
@@ -421,16 +421,16 @@ function ws_users_setInfo($params, &$service)
 
         $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-        $admin_ids = query2array($query, null, 'user_id');
+        $admin_ids = query2array($query, null, 'pwg_user_id');
 
         // we add all admin+webmaster users BUT the user herself
         $password_protected_users = array_merge($password_protected_users, array_diff($admin_ids, array($user['id'])));
 
-        if (in_array($params['user_id'][0], $password_protected_users))
+        if (in_array($params['pwg_user_id'][0], $password_protected_users))
         {
           return new PwgError(403, 'Only webmasters can change password of other "webmaster/admin" users');
         }
@@ -463,16 +463,16 @@ SELECT
     {
       $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE status IN (\'webmaster\', \'admin\')
 ;';
-      $protected_users = array_merge($protected_users, query2array($query, null, 'user_id'));
+      $protected_users = array_merge($protected_users, query2array($query, null, 'pwg_user_id'));
     }
 
     // status update query is separated from the rest as not applying to the same
     // set of users (current, guest and webmaster can't be changed)
-    $params['user_id_for_status'] = array_diff($params['user_id'], $protected_users);
+    $params['pwg_user_id_for_status'] = array_diff($params['pwg_user_id'], $protected_users);
 
     $update_status = $params['status'];
   }
@@ -538,20 +538,20 @@ SELECT
   single_update(
     USERS_TABLE,
     $updates,
-    array($conf['user_fields']['id'] => $params['user_id'][0])
+    array($conf['user_fields']['id'] => $params['pwg_user_id'][0])
     );
 
   if (isset($updates[ $conf['user_fields']['password'] ]))
   {
-    deactivate_user_auth_keys($params['user_id'][0]);
+    deactivate_user_auth_keys($params['pwg_user_id'][0]);
   }
 
-  if (isset($update_status) and count($params['user_id_for_status']) > 0)
+  if (isset($update_status) and count($params['pwg_user_id_for_status']) > 0)
   {
     $query = '
 UPDATE '. USER_INFOS_TABLE .' SET
     status = "'. $update_status .'"
-  WHERE user_id IN('. implode(',', $params['user_id_for_status']) .')
+  WHERE pwg_user_id IN('. implode(',', $params['pwg_user_id_for_status']) .')
 ;';
     pwg_query($query);
   }
@@ -570,7 +570,7 @@ UPDATE '. USER_INFOS_TABLE .' SET ';
     }
 
     $query.= '
-  WHERE user_id IN('. implode(',', $params['user_id']) .')
+  WHERE pwg_user_id IN('. implode(',', $params['pwg_user_id']) .')
 ;';
     pwg_query($query);
   }
@@ -581,7 +581,7 @@ UPDATE '. USER_INFOS_TABLE .' SET ';
     $query = '
 DELETE
   FROM '.USER_GROUP_TABLE.'
-  WHERE user_id IN ('.implode(',', $params['user_id']).')
+  WHERE pwg_user_id IN ('.implode(',', $params['pwg_user_id']).')
 ;';
     pwg_query($query);
 
@@ -603,9 +603,9 @@ SELECT
       
       foreach ($group_ids as $group_id)
       {
-        foreach ($params['user_id'] as $user_id)
+        foreach ($params['pwg_user_id'] as $pwg_user_id)
         {
-          $inserts[] = array('user_id' => $user_id, 'group_id' => $group_id);
+          $inserts[] = array('pwg_user_id' => $pwg_user_id, 'group_id' => $group_id);
         }
       }
 
@@ -616,7 +616,7 @@ SELECT
   invalidate_user_cache();
 
   return $service->invoke('pwg.users.getList', array(
-    'user_id' => $params['user_id'],
+    'pwg_user_id' => $params['pwg_user_id'],
     'display' => 'basics,'.implode(',', array_keys($updates_infos)),
     ));
 }

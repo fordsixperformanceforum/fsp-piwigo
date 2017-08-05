@@ -29,11 +29,11 @@
 /**
  * Checks if an email is well formed and not already in use.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param string $mail_address
  * @return string|void error message or nothing
  */
-function validate_mail_address($user_id, $mail_address)
+function validate_mail_address($pwg_user_id, $mail_address)
 {
   global $conf;
 
@@ -55,7 +55,7 @@ function validate_mail_address($user_id, $mail_address)
 SELECT count(*)
 FROM '.USERS_TABLE.'
 WHERE upper('.$conf['user_fields']['email'].') = upper(\''.$mail_address.'\')
-'.(is_numeric($user_id) ? 'AND '.$conf['user_fields']['id'].' != \''.$user_id.'\'' : '').'
+'.(is_numeric($pwg_user_id) ? 'AND '.$conf['user_fields']['id'].' != \''.$pwg_user_id.'\'' : '').'
 ;';
     list($count) = pwg_db_fetch_row(pwg_query($query));
     if ($count != 0)
@@ -194,7 +194,7 @@ function register_user($login, $password, $mail_address, $notify_admin=true, &$e
       );
 
     single_insert(USERS_TABLE, $insert);
-    $user_id = pwg_db_insert_id();
+    $pwg_user_id = pwg_db_insert_id();
 
     // Assign by default groups
     $query = '
@@ -209,14 +209,14 @@ SELECT id
     while ($row = pwg_db_fetch_assoc($result))
     {
       $inserts[] = array(
-        'user_id' => $user_id,
+        'pwg_user_id' => $pwg_user_id,
         'group_id' => $row['id']
         );
     }
 
     if (count($inserts) != 0)
     {
-      mass_inserts(USER_GROUP_TABLE, array('user_id', 'group_id'), $inserts);
+      mass_inserts(USER_GROUP_TABLE, array('pwg_user_id', 'group_id'), $inserts);
     }
 
     $override = array();
@@ -225,7 +225,7 @@ SELECT id
       $override['language'] = $language;
     }
     
-    create_user_infos($user_id, $override);
+    create_user_infos($pwg_user_id, $override);
 
     if ($notify_admin and $conf['email_admin_on_new_user'])
     {
@@ -276,13 +276,13 @@ SELECT id
     trigger_notify(
       'register_user',
       array(
-        'id'=>$user_id,
+        'id'=>$pwg_user_id,
         'username'=>$login,
         'email'=>$mail_address,
         )
       );
 
-    return $user_id;
+    return $pwg_user_id;
   }
   else
   {
@@ -294,16 +294,16 @@ SELECT id
  * Fetches user data from database.
  * Same that getuserdata() but with additional tests for guest.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param boolean $user_cache
  * @return array
  */
-function build_user($user_id, $use_cache=true)
+function build_user($pwg_user_id, $use_cache=true)
 {
   global $conf;
 
-  $user['id'] = $user_id;
-  $user = array_merge( $user, getuserdata($user_id, $use_cache) );
+  $user['id'] = $pwg_user_id;
+  $user = array_merge( $user, getuserdata($pwg_user_id, $use_cache) );
 
   if ($user['id'] == $conf['guest_id'] and $user['status'] <> 'guest')
   {
@@ -323,11 +323,11 @@ function build_user($user_id, $use_cache=true)
 /**
  * Finds informations related to the user identifier.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param boolean $use_cache
  * @return array
  */
-function getuserdata($user_id, $use_cache=false)
+function getuserdata($pwg_user_id, $use_cache=false)
 {
   global $conf;
 
@@ -350,7 +350,7 @@ SELECT ';
   }
   $query.= '
   FROM '.USERS_TABLE.'
-  WHERE '.$conf['user_fields']['id'].' = \''.$user_id.'\'';
+  WHERE '.$conf['user_fields']['id'].' = \''.$pwg_user_id.'\'';
 
   $row = pwg_db_fetch_assoc(pwg_query($query));
 
@@ -361,15 +361,15 @@ SELECT ';
 SELECT
     COUNT(1) AS counter
   FROM '.USER_INFOS_TABLE.' AS ui
-    LEFT JOIN '.USER_CACHE_TABLE.' AS uc ON ui.user_id = uc.user_id
+    LEFT JOIN '.USER_CACHE_TABLE.' AS uc ON ui.pwg_user_id = uc.pwg_user_id
     LEFT JOIN '.THEMES_TABLE.' AS t ON t.id = ui.theme
-  WHERE ui.user_id = '.$user_id.'
-  GROUP BY ui.user_id
+  WHERE ui.pwg_user_id = '.$pwg_user_id.'
+  GROUP BY ui.pwg_user_id
 ;';
     list($counter) = pwg_db_fetch_row(pwg_query($query));
     if ($counter != 1)
     {
-      create_user_infos($user_id);
+      create_user_infos($pwg_user_id);
     }
   }
 
@@ -380,9 +380,9 @@ SELECT
     uc.*,
     t.name AS theme_name
   FROM '.USER_INFOS_TABLE.' AS ui
-    LEFT JOIN '.USER_CACHE_TABLE.' AS uc ON ui.user_id = uc.user_id
+    LEFT JOIN '.USER_CACHE_TABLE.' AS uc ON ui.pwg_user_id = uc.pwg_user_id
     LEFT JOIN '.THEMES_TABLE.' AS t ON t.id = ui.theme
-  WHERE ui.user_id = '.$user_id.'
+  WHERE ui.pwg_user_id = '.$pwg_user_id.'
 ;';
 
   $result = pwg_query($query);
@@ -473,7 +473,7 @@ SELECT COUNT(DISTINCT(image_id)) as total
       // delete user cache
       $query = '
 DELETE FROM '.USER_CACHE_CATEGORIES_TABLE.'
-  WHERE user_id = '.$userdata['id'];
+  WHERE pwg_user_id = '.$userdata['id'];
       pwg_query($query);
 
       // Due to concurrency issues, we ask MySQL to ignore errors on
@@ -482,7 +482,7 @@ DELETE FROM '.USER_CACHE_CATEGORIES_TABLE.'
       mass_inserts(
         USER_CACHE_CATEGORIES_TABLE,
         array(
-          'user_id', 'cat_id',
+          'pwg_user_id', 'cat_id',
           'date_last', 'max_date_last', 'nb_images', 'count_images', 'nb_categories', 'count_categories'
           ),
         $user_cache_cats,
@@ -493,14 +493,14 @@ DELETE FROM '.USER_CACHE_CATEGORIES_TABLE.'
       // update user cache
       $query = '
 DELETE FROM '.USER_CACHE_TABLE.'
-  WHERE user_id = '.$userdata['id'];
+  WHERE pwg_user_id = '.$userdata['id'];
       pwg_query($query);
 
       // for the same reason as user_cache_categories, we ignore error on
       // this insert
       $query = '
 INSERT IGNORE INTO '.USER_CACHE_TABLE.'
-  (user_id, need_update, cache_update_time, forbidden_categories, nb_total_images,
+  (pwg_user_id, need_update, cache_update_time, forbidden_categories, nb_total_images,
     last_photo_date,
     image_access_type, image_access_list)
   VALUES
@@ -536,7 +536,7 @@ function check_user_favorites()
 SELECT DISTINCT f.image_id
   FROM '.FAVORITES_TABLE.' AS f INNER JOIN '.IMAGE_CATEGORY_TABLE.' AS ic
     ON f.image_id = ic.image_id
-  WHERE f.user_id = '.$user['id'].'
+  WHERE f.pwg_user_id = '.$user['id'].'
   '.get_sql_condition_FandF(
       array(
         'forbidden_categories' => 'ic.category_id',
@@ -549,7 +549,7 @@ SELECT DISTINCT f.image_id
   $query = '
 SELECT image_id
   FROM '.FAVORITES_TABLE.'
-  WHERE user_id = '.$user['id'].'
+  WHERE pwg_user_id = '.$user['id'].'
 ;';
   $favorites = query2array($query,null, 'image_id');
 
@@ -559,7 +559,7 @@ SELECT image_id
     $query = '
 DELETE FROM '.FAVORITES_TABLE.'
   WHERE image_id IN ('.implode(',', $to_deletes).')
-    AND user_id = '.$user['id'].'
+    AND pwg_user_id = '.$user['id'].'
 ;';
     pwg_query($query);
   }
@@ -573,11 +573,11 @@ DELETE FROM '.FAVORITES_TABLE.'
  * to the user. The list contains at least 0 to be compliant with queries
  * such as "WHERE category_id NOT IN ($forbidden_categories)"
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param string $user_status
  * @return string comma separated ids
  */
-function calculate_permissions($user_id, $user_status)
+function calculate_permissions($pwg_user_id, $user_status)
 {
   $query = '
 SELECT id
@@ -590,7 +590,7 @@ SELECT id
   $query = '
 SELECT cat_id
   FROM '.USER_ACCESS_TABLE.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ;';
   $authorized_array = query2array($query,null, 'cat_id');
 
@@ -599,7 +599,7 @@ SELECT cat_id
 SELECT cat_id
   FROM '.USER_GROUP_TABLE.' AS ug INNER JOIN '.GROUP_ACCESS_TABLE.' AS ga
     ON ug.group_id = ga.group_id
-  WHERE ug.user_id = '.$user_id.'
+  WHERE ug.pwg_user_id = '.$pwg_user_id.'
 ;';
   $authorized_array =
     array_merge(
@@ -661,8 +661,8 @@ SELECT '.$conf['user_fields']['id'].'
   }
   else
   {
-    list($user_id) = pwg_db_fetch_row($result);
-    return $user_id;
+    list($pwg_user_id) = pwg_db_fetch_row($result);
+    return $pwg_user_id;
   }
 }
 
@@ -692,8 +692,8 @@ SELECT
   }
   else
   {
-    list($user_id) = pwg_db_fetch_row($result);
-    return $user_id;
+    list($pwg_user_id) = pwg_db_fetch_row($result);
+    return $pwg_user_id;
   }
 }
 
@@ -712,7 +712,7 @@ function get_default_user_info($convert_str=true)
     $query = '
 SELECT *
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id = '.$conf['default_user_id'].'
+  WHERE pwg_user_id = '.$conf['default_pwg_user_id'].'
 ;';
 
     $result = pwg_query($query);
@@ -721,7 +721,7 @@ SELECT *
     {
       $cache['default_user'] = pwg_db_fetch_assoc($result);
 
-      unset($cache['default_user']['user_id']);
+      unset($cache['default_user']['pwg_user_id']);
       unset($cache['default_user']['status']);
       unset($cache['default_user']['registration_date']);
     }
@@ -825,19 +825,19 @@ function get_browser_language()
 /**
  * Creates user informations based on default values.
  *
- * @param int|int[] $user_ids
+ * @param int|int[] $pwg_user_ids
  * @param array $override_values values used to override default user values
  */
-function create_user_infos($user_ids, $override_values=null)
+function create_user_infos($pwg_user_ids, $override_values=null)
 {
   global $conf;
 
-  if (!is_array($user_ids))
+  if (!is_array($pwg_user_ids))
   {
-    $user_ids = array($user_ids);
+    $pwg_user_ids = array($pwg_user_ids);
   }
 
-  if (!empty($user_ids))
+  if (!empty($pwg_user_ids))
   {
     $inserts = array();
     list($dbnow) = pwg_db_fetch_row(pwg_query('SELECT NOW();'));
@@ -854,16 +854,16 @@ function create_user_infos($user_ids, $override_values=null)
       $default_user = array_merge($default_user, $override_values);
     }
 
-    foreach ($user_ids as $user_id)
+    foreach ($pwg_user_ids as $pwg_user_id)
     {
       $level= isset($default_user['level']) ? $default_user['level'] : 0;
-      if ($user_id == $conf['webmaster_id'])
+      if ($pwg_user_id == $conf['webmaster_id'])
       {
         $status = 'webmaster';
         $level = max( $conf['available_permission_levels'] );
       }
-      elseif (($user_id == $conf['guest_id']) or
-               ($user_id == $conf['default_user_id']))
+      elseif (($pwg_user_id == $conf['guest_id']) or
+               ($pwg_user_id == $conf['default_pwg_user_id']))
       {
         $status = 'guest';
       }
@@ -875,7 +875,7 @@ function create_user_infos($user_ids, $override_values=null)
       $insert = array_merge(
         $default_user,
         array(
-          'user_id' => $user_id,
+          'pwg_user_id' => $pwg_user_id,
           'status' => $status,
           'registration_date' => $dbnow,
           'level' => $level
@@ -891,25 +891,25 @@ function create_user_infos($user_ids, $override_values=null)
 /**
  * Returns the auto login key for an user or false if the user is not found.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param int $time
  * @param string &$username fille with corresponding username
  * @return string|false
  */
-function calculate_auto_login_key($user_id, $time, &$username)
+function calculate_auto_login_key($pwg_user_id, $time, &$username)
 {
   global $conf;
   $query = '
 SELECT '.$conf['user_fields']['username'].' AS username
   , '.$conf['user_fields']['password'].' AS password
 FROM '.USERS_TABLE.'
-WHERE '.$conf['user_fields']['id'].' = '.$user_id;
+WHERE '.$conf['user_fields']['id'].' = '.$pwg_user_id;
   $result = pwg_query($query);
   if (pwg_db_num_rows($result) > 0)
   {
     $row = pwg_db_fetch_assoc($result);
     $username = stripslashes($row['username']);
-    $data = $time.$user_id.$username;
+    $data = $time.$pwg_user_id.$username;
     $key = base64_encode( hash_hmac('sha1', $data, $conf['secret_key'].$row['password'],true) );
     return $key;
   }
@@ -919,20 +919,20 @@ WHERE '.$conf['user_fields']['id'].' = '.$user_id;
 /**
  * Performs all required actions for user login.
  *
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param bool $remember_me
  */
-function log_user($user_id, $remember_me)
+function log_user($pwg_user_id, $remember_me)
 {
   global $conf, $user;
 
   if ($remember_me and $conf['authorize_remembering'])
   {
     $now = time();
-    $key = calculate_auto_login_key($user_id, $now, $username);
+    $key = calculate_auto_login_key($pwg_user_id, $now, $username);
     if ($key!==false)
     {
-      $cookie = $user_id.'-'.$now.'-'.$key;
+      $cookie = $pwg_user_id.'-'.$now.'-'.$key;
       setcookie($conf['remember_me_name'],
         $cookie,
         time()+$conf['remember_me_length'],
@@ -957,7 +957,7 @@ function log_user($user_id, $remember_me)
   {
     session_start();
   }
-  $_SESSION['pwg_uid'] = (int)$user_id;
+  $_SESSION['pwg_uid'] = (int)$pwg_user_id;
 
   $user['id'] = $_SESSION['pwg_uid'];
   trigger_notify('user_login', $user['id']);
@@ -1026,10 +1026,10 @@ function pwg_password_hash($password)
  *
  * @param string $password plain text
  * @param string $hash may be md5 or phpass hashed password
- * @param integer $user_id only useful to update password hash from md5 to phpass
+ * @param integer $pwg_user_id only useful to update password hash from md5 to phpass
  * @return bool
  */
-function pwg_password_verify($password, $hash, $user_id=null)
+function pwg_password_verify($password, $hash, $pwg_user_id=null)
 {
   global $conf, $pwg_hasher;
 
@@ -1047,7 +1047,7 @@ function pwg_password_verify($password, $hash, $user_id=null)
 
     if ($check)
     {
-      if (!isset($user_id) or $conf['external_authentification'])
+      if (!isset($pwg_user_id) or $conf['external_authentification'])
       {
         return true;
       }
@@ -1058,7 +1058,7 @@ function pwg_password_verify($password, $hash, $user_id=null)
       single_update(
         USERS_TABLE,
         array('password' => $hash),
-        array('id' => $user_id)
+        array('id' => $pwg_user_id)
         );
     }
   }
@@ -1488,8 +1488,8 @@ SELECT
     '.$conf['user_fields']['username'].' AS username,
     NOW() AS dbnow
   FROM '.USER_AUTH_KEYS_TABLE.' AS uak
-    JOIN '.USER_INFOS_TABLE.' AS ui ON uak.user_id = ui.user_id
-    JOIN '.USERS_TABLE.' AS u ON u.'.$conf['user_fields']['id'].' = ui.user_id
+    JOIN '.USER_INFOS_TABLE.' AS ui ON uak.pwg_user_id = ui.pwg_user_id
+    JOIN '.USERS_TABLE.' AS u ON u.'.$conf['user_fields']['id'].' = ui.pwg_user_id
   WHERE auth_key = \''.$auth_key.'\'
 ;';
   $keys = query2array($query);
@@ -1514,7 +1514,7 @@ SELECT
     return false;
   }
 
-  $user['id'] = $key['user_id'];
+  $user['id'] = $key['pwg_user_id'];
   log_user($user['id'], false);
   trigger_notify('login_success', $key['username']);
 
@@ -1528,10 +1528,10 @@ SELECT
  * Creates an authentication key.
  *
  * @since 2.8
- * @param int $user_id
+ * @param int $pwg_user_id
  * @return array
  */
-function create_user_auth_key($user_id, $user_status=null)
+function create_user_auth_key($pwg_user_id, $user_status=null)
 {
   global $conf;
 
@@ -1547,7 +1547,7 @@ function create_user_auth_key($user_id, $user_status=null)
 SELECT
     status
   FROM '.USER_INFOS_TABLE.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ;';
     $user_infos = query2array($query);
 
@@ -1579,7 +1579,7 @@ SELECT
   {
     $key = array(
       'auth_key' => $candidate,
-      'user_id' => $user_id,
+      'pwg_user_id' => $pwg_user_id,
       'created_on' => $now,
       'duration' => $conf['auth_key_duration'],
       'expired_on' => $expiration,
@@ -1593,7 +1593,7 @@ SELECT
   }
   else
   {
-    return create_user_auth_key($user_id, $user_status);
+    return create_user_auth_key($pwg_user_id, $user_status);
   }
 }
 
@@ -1601,15 +1601,15 @@ SELECT
  * Deactivates authentication keys
  *
  * @since 2.8
- * @param int $user_id
+ * @param int $pwg_user_id
  * @return null
  */
-function deactivate_user_auth_keys($user_id)
+function deactivate_user_auth_keys($pwg_user_id)
 {
   $query = '
 UPDATE '.USER_AUTH_KEYS_TABLE.'
   SET expired_on = NOW()
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
     AND expired_on > NOW()
 ;';
   pwg_query($query);
@@ -1619,11 +1619,11 @@ UPDATE '.USER_AUTH_KEYS_TABLE.'
  * Gets the last visit (datetime) of a user, based on history table
  *
  * @since 2.9
- * @param int $user_id
+ * @param int $pwg_user_id
  * @param boolean $save_in_user_infos to store result in user_infos.last_visit
  * @return string date & time of last visit
  */
-function get_user_last_visit_from_history($user_id, $save_in_user_infos=false)
+function get_user_last_visit_from_history($pwg_user_id, $save_in_user_infos=false)
 {
   $last_visit = null;
 
@@ -1632,7 +1632,7 @@ SELECT
     date,
     time
 FROM '.HISTORY_TABLE.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
   ORDER BY id DESC
   LIMIT 1
 ;';
@@ -1649,7 +1649,7 @@ UPDATE '.USER_INFOS_TABLE.'
   SET last_visit = '.(is_null($last_visit) ? 'NULL' : "'".$last_visit."'").',
       last_visit_from_history = \'true\',
       lastmodified = lastmodified
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ';
     pwg_query($query);
   }

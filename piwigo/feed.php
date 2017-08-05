@@ -70,7 +70,7 @@ $image_only=isset($_GET['image_only']);
 if ( !empty($feed_id) )
 {
   $query = '
-SELECT user_id,
+SELECT pwg_user_id,
        last_check
   FROM '.USER_FEED_TABLE.'
   WHERE id = \''.$feed_id.'\'
@@ -80,9 +80,9 @@ SELECT user_id,
   {
     page_not_found(l10n('Unknown feed identifier'));
   }
-  if ($feed_row['user_id']!=$user['id'])
+  if ($feed_row['pwg_user_id']!=$user['id'])
   { // new user
-    $user = build_user( $feed_row['user_id'], true );
+    $user = build_user( $feed_row['pwg_user_id'], true );
   }
 }
 else

@@ -105,7 +105,7 @@ if ( !defined('PWG_CHARSET') )
 // load all the user languages
   $all_langs=array();
   $query='
-SELECT language, COUNT(user_id) AS count FROM '.USER_INFOS_TABLE.'
+SELECT language, COUNT(pwg_user_id) AS count FROM '.USER_INFOS_TABLE.'
   GROUP BY language';
   $result = pwg_query($query);
   while ( $row=pwg_db_fetch_assoc($result) )
@@ -139,7 +139,7 @@ SELECT language, COUNT(user_id) AS count FROM '.USER_INFOS_TABLE.'
   $admin_charset='iso-8859-1';
   $query='
 SELECT language FROM '.USER_INFOS_TABLE.'
-  WHERE user_id='.$conf['webmaster_id'];
+  WHERE pwg_user_id='.$conf['webmaster_id'];
   $result = pwg_query($query);
   if (pwg_db_num_rows($result)==0)
   {

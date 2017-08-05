@@ -300,24 +300,24 @@ DELETE
 
     $query = '
 SELECT
-    user_id
+    pwg_user_id
   FROM '.USER_INFOS_TABLE.'
   WHERE theme = \''.$default_theme.'\'
 ;';
-    $user_ids = array_unique(
+    $pwg_user_ids = array_unique(
       array_merge(
-        array_from_query($query, 'user_id'),
+        array_from_query($query, 'pwg_user_id'),
         array($conf['guest_id'], $conf['default_user_id'])
         )
       );
 
-    // $user_ids can't be empty, at least the default user has the default
+    // $pwg_user_ids can't be empty, at least the default user has the default
     // theme
 
     $query = '
 UPDATE '.USER_INFOS_TABLE.'
   SET theme = \''.$theme_id.'\'
-  WHERE user_id IN ('.implode(',', $user_ids).')
+  WHERE pwg_user_id IN ('.implode(',', $pwg_user_ids).')
 ;';
     pwg_query($query);
   }

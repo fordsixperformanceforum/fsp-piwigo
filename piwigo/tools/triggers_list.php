@@ -92,7 +92,7 @@ array(
 array(
   'name' => 'delete_user',
   'type' => 'trigger_notify',
-  'vars' => array('int', 'user_id'),
+  'vars' => array('int', 'pwg_user_id'),
   'files' => array('admin\include\functions.inc.php (delete_user)'),
 ),
 array(
@@ -756,7 +756,7 @@ array(
 array(
   'name' => 'save_profile_from_post',
   'type' => 'trigger_notify',
-  'vars' => array('int', 'user_id'),
+  'vars' => array('int', 'pwg_user_id'),
   'files' => array('profile.php (save_profile_from_post)'),
 ),
 array(
@@ -844,14 +844,14 @@ array(
 array(
   'name' => 'user_logout',
   'type' => 'trigger_notify',
-  'vars' => array('int', 'user_id'),
+  'vars' => array('int', 'pwg_user_id'),
   'files' => array('include\functions_user.inc.php (logout_user)'),
   'infos' => 'New in 2.5',
 ),
 array(
   'name' => 'user_login',
   'type' => 'trigger_notify',
-  'vars' => array('int', 'user_id'),
+  'vars' => array('int', 'pwg_user_id'),
   'files' => array('include\functions_user.inc.php (log_user)'),
   'infos' => 'New in 2.5',
 ),
