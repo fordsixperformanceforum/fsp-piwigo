@@ -99,7 +99,7 @@ if (isset($_POST['submit_add']))
   $insert = array(
     'type' => $_POST['who'],
     'group_id' => ('group' == $_POST['who']) ? $_POST['who_group'] : null,
-    'user_id' => ('user' == $_POST['who']) ? $_POST['who_user'] : null,
+    'pwg_user_id' => ('user' == $_POST['who']) ? $_POST['who_user'] : null,
     'category_id' => ($_POST['category'] > 0) ? $_POST['category'] : null,
     'user_album' => boolean_to_string(-1 == $_POST['category']),
     'recursive' => isset($_POST['recursive']) ? 'true' : 'false',
@@ -117,7 +117,7 @@ SELECT
     id
   FROM '.COMMUNITY_PERMISSIONS_TABLE.'
   WHERE type = \''.$insert['type'].'\'
-    AND user_id '.(isset($insert['user_id']) ? '= '.$insert['user_id'] : 'is null').'
+    AND pwg_user_id '.(isset($insert['pwg_user_id']) ? '= '.$insert['pwg_user_id'] : 'is null').'
     AND group_id '.(isset($insert['group_id']) ? '= '.$insert['group_id'] : 'is null').'
     AND category_id '.(isset($insert['category_id']) ? '= '.$insert['category_id'] : 'is null').'
     AND user_album = \''.$insert['user_album'].'\'
@@ -243,7 +243,7 @@ SELECT
       array(
         'edit' => $row['id'],
         'who_options_selected' => $row['type'],
-        'user_options_selected' => $row['user_id'],
+        'user_options_selected' => $row['pwg_user_id'],
         'group_options_selected' => $row['group_id'],
         'whole_gallery_selected' => empty($row['category_id']) and !get_boolean($row['user_album']),
         'user_album_selected' => get_boolean($row['user_album']),
@@ -284,7 +284,7 @@ SELECT
     '.$conf['user_fields']['id'].' AS id,
     '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.' AS u
-    INNER JOIN '.USER_INFOS_TABLE.' AS uf ON uf.user_id = u.'.$conf['user_fields']['id'].'
+    INNER JOIN '.USER_INFOS_TABLE.' AS uf ON uf.pwg_user_id = u.'.$conf['user_fields']['id'].'
   WHERE uf.status IN (\'normal\',\'generic\')
 ;';
 $result = pwg_query($query);
@@ -358,7 +358,7 @@ SELECT
 $result = pwg_query($query);
 
 $permissions = array();
-$user_ids = array();
+$pwg_user_ids = array();
 $group_ids = array();
 $category_ids = array();
 
@@ -366,9 +366,9 @@ while ($row = pwg_db_fetch_assoc($result))
 {
   array_push($permissions, $row);
 
-  if (!empty($row['user_id']))
+  if (!empty($row['pwg_user_id']))
   {
-    array_push($user_ids, $row['user_id']);
+    array_push($pwg_user_ids, $row['pwg_user_id']);
   }
 
   if (!empty($row['group_id']))
@@ -382,14 +382,14 @@ while ($row = pwg_db_fetch_assoc($result))
   }
 }
 
-if (!empty($user_ids))
+if (!empty($pwg_user_ids))
 {
   $query = '
 SELECT
     '.$conf['user_fields']['id'].' AS id,
     '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.'
-  WHERE '.$conf['user_fields']['id'].' IN ('.implode(',', $user_ids).')
+  WHERE '.$conf['user_fields']['id'].' IN ('.implode(',', $pwg_user_ids).')
 ;';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_assoc($result))
@@ -456,7 +456,7 @@ foreach ($permissions as $permission)
   {
     $who = sprintf(
       l10n('%s (the user)'),
-      $name_of_user[$permission['user_id']]
+      $name_of_user[$permission['pwg_user_id']]
       );
   }
   elseif ('group' == $permission['type'])

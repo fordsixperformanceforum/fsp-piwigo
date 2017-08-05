@@ -21,9 +21,9 @@
 // | USA.                                                                  |
 // +-----------------------------------------------------------------------+
 
-function community_get_user_permissions($user_id)
+function community_get_user_permissions($pwg_user_id)
 {
-  // echo __FUNCTION__.' => call for user '.$user_id.'<br>';
+  // echo __FUNCTION__.' => call for user '.$pwg_user_id.'<br>';
   
   global $conf, $user;
 
@@ -36,11 +36,11 @@ function community_get_user_permissions($user_id)
   // I (plg) don't understand why, but when you connect, you keep the
   // permissions calculated for the "guest" : the session "inherits"
   // variables from guest to the connected user, so I add a
-  // $_SESSION['community_user_id'] to force refresh if the permissions were
+  // $_SESSION['community_pwg_user_id'] to force refresh if the permissions were
   // not calculated for the right user
   if (
-    isset($_SESSION['community_user_id'])
-    and $_SESSION['community_user_id'] == $user_id
+    isset($_SESSION['community_pwg_user_id'])
+    and $_SESSION['community_pwg_user_id'] == $pwg_user_id
     and $_SESSION['community_cache_key'] == $cache_key
     )
   {
@@ -63,7 +63,7 @@ function community_get_user_permissions($user_id)
 SELECT
     group_id
   FROM '.USER_GROUP_TABLE.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ;';
   $user_group_ids = array_from_query($query, 'group_id');
 
@@ -80,11 +80,11 @@ SELECT
   FROM '.COMMUNITY_PERMISSIONS_TABLE.'
   WHERE (type = \'any_visitor\')';
 
-  if ($user_id != $conf['guest_id'])
+  if ($pwg_user_id != $conf['guest_id'])
   {
     $query.= '
     OR (type = \'any_registered_user\')
-    OR (type = \'user\' AND user_id = '.$user_id.')';
+    OR (type = \'user\' AND pwg_user_id = '.$pwg_user_id.')';
 
     if (count($user_group_ids) > 0)
     {
@@ -251,7 +251,7 @@ SELECT
 
   if ($return['user_album'])
   {
-    $user_album_category_id = community_get_user_album($user_id);
+    $user_album_category_id = community_get_user_album($pwg_user_id);
 
     if (!empty($user_album_category_id) and !in_array($user_album_category_id, $return['upload_categories']))
     {
@@ -271,9 +271,9 @@ SELECT
 
   $_SESSION['community_user_permissions'] = $return;
   $_SESSION['community_cache_key'] = $cache_key;
-  $_SESSION['community_user_id'] = $user_id;
+  $_SESSION['community_pwg_user_id'] = $pwg_user_id;
 
-  // echo __FUNCTION__.' => cache reset for user '.$user_id.'<br>';
+  // echo __FUNCTION__.' => cache reset for user '.$pwg_user_id.'<br>';
   
   return $_SESSION['community_user_permissions'];
 }
@@ -282,7 +282,7 @@ SELECT
  * return the user album category_id. The album is automatically created if
  * it does not exist (or has been deleted)
  */
-function community_get_user_album($user_id)
+function community_get_user_album($pwg_user_id)
 {
   global $conf;
   
@@ -291,7 +291,7 @@ function community_get_user_album($user_id)
   $query = '
 SELECT *
   FROM '.CATEGORIES_TABLE.'
-  WHERE community_user = '.$user_id.'
+  WHERE community_user = '.$pwg_user_id.'
 ;';
   $result = pwg_query($query);
   while ($row = pwg_db_fetch_assoc($result))
@@ -302,14 +302,14 @@ SELECT *
 
   if (!isset($user_album_category_id))
   {
-    $user_infos = getuserdata($user_id, false);
+    $user_infos = getuserdata($pwg_user_id, false);
 
     include_once(PHPWG_ROOT_PATH.'admin/include/functions.php');
     $category_info = create_virtual_category($user_infos['username'], $conf['community']['user_albums_parent']);
 
     single_update(
       CATEGORIES_TABLE,
-      array('community_user' => $user_id),
+      array('community_user' => $pwg_user_id),
       array('id' => $category_info['id'])
       );
 
@@ -342,7 +342,7 @@ DELETE
   delete_elements($image_ids, true);
 }
 
-function community_reject_user_pendings($user_id)
+function community_reject_user_pendings($pwg_user_id)
 {
   $query = '
 SELECT
@@ -350,7 +350,7 @@ SELECT
   FROM '.COMMUNITY_PENDINGS_TABLE.' AS cp
     INNER JOIN '.IMAGES_TABLE.' AS i ON i.id = cp.image_id
   WHERE state != \'validated\'
-    AND added_by = '.$user_id.'
+    AND added_by = '.$pwg_user_id.'
 ;';
   $result = pwg_query($query);
   $image_ids = array();
@@ -383,7 +383,7 @@ function community_get_cache_key()
   }
 }
 
-function community_get_user_limits($user_id)
+function community_get_user_limits($pwg_user_id)
 {
   // how many photos and storage for this user?
   $query = '
@@ -391,7 +391,7 @@ SELECT
     COUNT(id) AS nb_photos,
     IFNULL(FLOOR(SUM(filesize)/1024), 0) AS storage
   FROM '.IMAGES_TABLE.'
-  WHERE added_by = '.$user_id.'
+  WHERE added_by = '.$pwg_user_id.'
 ;';
   return pwg_db_fetch_assoc(pwg_query($query));
 }

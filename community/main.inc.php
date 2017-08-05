@@ -437,7 +437,7 @@ SELECT
     max_date_last,
     count_categories AS nb_categories
   FROM '.CATEGORIES_TABLE.'
-   '.$join_type.' JOIN '.USER_CACHE_CATEGORIES_TABLE.' ON id=cat_id AND user_id='.$join_user.'
+   '.$join_type.' JOIN '.USER_CACHE_CATEGORIES_TABLE.' ON id=cat_id AND pwg_user_id='.$join_user.'
   WHERE '. implode('
     AND ', $where);
 
@@ -809,16 +809,16 @@ UPDATE '.IMAGES_TABLE.'
 }
 
 add_event_handler('delete_user', 'community_delete_user');
-function community_delete_user($user_id)
+function community_delete_user($pwg_user_id)
 {
   $query = '
 DELETE
   FROM '.COMMUNITY_PERMISSIONS_TABLE.'
-  WHERE user_id = '.$user_id.'
+  WHERE pwg_user_id = '.$pwg_user_id.'
 ;';
   pwg_query($query);
 
-  community_reject_user_pendings($user_id);
+  community_reject_user_pendings($pwg_user_id);
 }
 
 add_event_handler('delete_categories', 'community_delete_category');
@@ -887,7 +887,7 @@ SELECT
     '.$conf['user_fields']['id'].' AS id,
     '.$conf['user_fields']['username'].' AS username
   FROM '.USERS_TABLE.' AS u
-    INNER JOIN '.USER_INFOS_TABLE.' AS uf ON uf.user_id = u.'.$conf['user_fields']['id'].'
+    INNER JOIN '.USER_INFOS_TABLE.' AS uf ON uf.pwg_user_id = u.'.$conf['user_fields']['id'].'
   WHERE uf.status IN (\'normal\',\'generic\')
 ;';
   $result = pwg_query($query);

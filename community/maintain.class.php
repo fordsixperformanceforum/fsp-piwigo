@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS '.$prefixeTable.'community_permissions (
   id int(11) NOT NULL AUTO_INCREMENT,
   type varchar(255) NOT NULL,
   group_id smallint(5) unsigned DEFAULT NULL,
-  user_id mediumint(8) unsigned DEFAULT NULL,
+  pwg_user_id mediumint(8) unsigned DEFAULT NULL,
   category_id smallint(5) unsigned DEFAULT NULL,
   user_album enum(\'true\',\'false\') NOT NULL DEFAULT \'false\',
   recursive enum(\'true\',\'false\') NOT NULL DEFAULT \'true\',
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS '.$prefixeTable.'community_pendings (
 
     // Piwigo 2.7 enlarges user ids, from smallint to mediumint
     $to_enlarge_ids = array(
-      $prefixeTable.'community_permissions.user_id',
+      $prefixeTable.'community_permissions.pwg_user_id',
       $prefixeTable.'community_pendings.validated_by',
       $prefixeTable.'categories.community_user',
       );
